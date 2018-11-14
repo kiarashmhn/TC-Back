@@ -50,7 +50,8 @@ class UserController():
                         address=req.get("address"),
                         gender=req.get("gender"),
                         postalCode=req.get("postalCode"),
-                        email=req.get("email"))
+                        email=req.get("email"),
+                        role="user")
             db.session.add(user)
             db.session.commit()
             login_user(user)
