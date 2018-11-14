@@ -17,7 +17,7 @@ class CarHandler():
     def __init__(self):
         pass
 
-    @car.route('/', methods=["POST"])
+    @car.route('', methods=["POST"])
     @login_required
     def add_car():
         req = request.get_json()
@@ -42,10 +42,10 @@ class CarHandler():
             db.session.add(carr)
             db.session.commit()
             print("car added")
-            response = ResponseObject.ResponseObject(obj=car, status='OK')
+            response = ResponseObject.ResponseObject(obj=carr, status='OK')
             return jsonify(response.serialize())
 
-    @app.route('/<int:car_id>', methods=["DELETE"])
+    @car.route('/<int:car_id>', methods=["DELETE"])
     @login_required
     def delete_car(car_id):
         if car_id is None:
@@ -60,7 +60,7 @@ class CarHandler():
         response = ResponseObject.ResponseObject(obj=None, status='OK')
         return jsonify(response.serialize())
 
-    @app.route('/', methods=["GET"])
+    @car.route('', methods=["GET"])
     @login_required
     def list_car():
         cars = Car.query.all()
