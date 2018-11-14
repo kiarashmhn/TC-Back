@@ -20,8 +20,10 @@ from QP.auth.models import User
 from QP.car.controllers import car
 from QP.car.models import Car
 
-app.register_blueprint(auth, url_prefix='/auth')
-app.register_blueprint(car, url_prefix='/cars')
+base_url = '/api/v1'
+
+app.register_blueprint(auth, url_prefix=base_url+'/auth')
+app.register_blueprint(car, url_prefix=base_url+'/cars')
 
 @login_manager.user_loader
 def load_user(user_id):
