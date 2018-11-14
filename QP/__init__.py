@@ -17,8 +17,11 @@ login_manager.init_app(app)
 
 from QP.auth.controllers import auth
 from QP.auth.models import User
+from QP.car.controllers import car
+from QP.car.models import Car
 
 app.register_blueprint(auth, url_prefix='/auth')
+app.register_blueprint(car, url_prefix='/cars')
 
 @login_manager.user_loader
 def load_user(user_id):
