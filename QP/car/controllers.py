@@ -59,3 +59,13 @@ class CarHandler():
         db.session.commit()
         response = ResponseObject.ResponseObject(obj=None, status='OK')
         return jsonify(response.serialize())
+
+    @app.route('/', methods=["GET"])
+    @login_required
+    def list_car():
+        cars = Car.query.all()
+        if cars is None:
+            response = ResponseObject.ResponseObject(obj=None, status='there are no cars in the database!')
+            return jsonify(response.serialize())
+        response = ResponseObject.ResponseObject(obj=cars, status='OK')
+        return jsonify(response.serialize())
