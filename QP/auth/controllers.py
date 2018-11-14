@@ -80,3 +80,9 @@ class UserController():
         response = ResponseObject.ResponseObject(obj=u, status='OK')
         return jsonify(response.serialize())
 
+    @app.route('/logout', methods=["GET"])
+    def logout():
+        logout_user()
+        response = ResponseObject.ResponseObject(obj=None, status='OK')
+        return jsonify(response.serialize())
+
