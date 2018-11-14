@@ -44,3 +44,18 @@ class CarHandler():
             print("car added")
             response = ResponseObject.ResponseObject(obj=car, status='OK')
             return jsonify(response.serialize())
+
+    @app.route('/<int:car_id>', methods=["DELETE"])
+    @login_required
+    def delete_car(car_id):
+        if car_id is None:
+            response = ResponseObject.ResponseObject(obj=None, status='car_id cannot be empty!')
+            return jsonify(response.serialize())
+        carr = Car.query.filter_by(id=car_id).first()
+        if carr is None:
+            response = ResponseObject.ResponseObject(obj=None, status='invalid car_id!')
+            return jsonify(response.serialize())
+        db.session.delete(carr)
+        db.session.commit()
+        response = ResponseObject.ResponseObject(obj=None, status='OK')
+        return jsonify(response.serialize())
