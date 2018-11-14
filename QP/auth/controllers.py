@@ -60,3 +60,23 @@ class UserController():
         else:
             response = ResponseObject.ResponseObject(obj=None, status=error)
             return jsonify(response.serialize())
+
+    @app.route('/login', methods=["POST"])
+    def login():
+        req = request.get_json()
+        username = req.get("username")
+        password = req.get("password")
+        error = None
+        if username is None or password is None:
+            error = 'username and password fields cannot be empty!'
+            response = ResponseObject.ResponseObject(obj=None, status=error)
+            return jsonify(response.serialize())
+        u = User.get_by_username(username=username)
+        if u is None or not u.check_password(password):
+            error = 'invalid credentials!'
+            response = ResponseObject.ResponseObject(obj=None, status=error)
+            return jsonify(response.serialize())
+        login_user(u)
+        response = ResponseObject.ResponseObject(obj=u, status='OK')
+        return jsonify(response.serialize())
+
