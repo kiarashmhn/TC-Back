@@ -18,6 +18,7 @@ class User(db.Model, UserMixin):
     authenticated = db.Column(db.Boolean)
     mobile_num = db.Column(db.String(15))
     phone_num = db.Column(db.String(15))
+    cars = db.relationship('Car', backref='user', lazy=True)
 
     @property
     def password(self):
