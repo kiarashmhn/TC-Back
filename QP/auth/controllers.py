@@ -61,7 +61,7 @@ class UserController():
             response = ResponseObject.ResponseObject(obj=None, status=error)
             return jsonify(response.serialize())
 
-    @app.route('/login', methods=["POST"])
+    @auth.route('/login', methods=["POST"])
     def login():
         req = request.get_json()
         username = req.get("username")
@@ -80,7 +80,7 @@ class UserController():
         response = ResponseObject.ResponseObject(obj=u, status='OK')
         return jsonify(response.serialize())
 
-    @app.route('/logout', methods=["GET"])
+    @auth.route('/logout', methods=["GET"])
     def logout():
         logout_user()
         response = ResponseObject.ResponseObject(obj=None, status='OK')
