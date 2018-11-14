@@ -53,7 +53,7 @@ class UserController():
                         email=req.get("email"))
             db.session.add(user)
             db.session.commit()
-            login_user(user)
+            #login_user(user)
             print("signed in")
             response = ResponseObject.ResponseObject(obj=user, status='OK')
             return jsonify(response.serialize())
