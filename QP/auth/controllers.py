@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from flask import Flask, request, jsonify, redirect, render_template, url_for, flash
+from flask import Flask, request, jsonify, redirect, render_template, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, current_user
 from QP import db, app
@@ -55,6 +55,8 @@ class UserController():
             db.session.add(user)
             db.session.commit()
             login_user(user)
+            session['username'] = req.get("username")
+            session['role'] = "user"
             print("signed in")
             response = ResponseObject.ResponseObject(obj=user, status='OK')
             return jsonify(response.serialize())
@@ -78,12 +80,16 @@ class UserController():
             response = ResponseObject.ResponseObject(obj=None, status=error)
             return jsonify(response.serialize())
         login_user(u)
+        session['username'] = req.get("username")
+        session['role'] = u.role
         response = ResponseObject.ResponseObject(obj=u, status='OK')
         return jsonify(response.serialize())
 
     @auth.route('/logout', methods=["GET"])
     def logout():
         logout_user()
+        session.pop('username', None)
+        session.pop('role', None)
         response = ResponseObject.ResponseObject(obj=None, status='OK')
         return jsonify(response.serialize())
 
