@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify, redirect, render_template, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -10,7 +11,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'th
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.session_protection = 'strong'
+login_manager.init_app(app)
 
 from QP.auth.controllers import auth
+from QP.auth.models import User
 
 app.register_blueprint(auth, url_prefix='/auth')
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
