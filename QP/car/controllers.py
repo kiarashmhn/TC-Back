@@ -77,3 +77,33 @@ class CarHandler():
             return jsonify(response.serialize())
         response = ResponseObject.ResponseObject(obj=cars, status='OK')
         return jsonify(response.serialize())
+
+    @car.route('/<int:car_id>', methods=["PUT"])
+    @login_required
+    def update_car(car_id):
+        req = request.get_json()
+        if session['role'] == "admin":
+            carr = Car.query.filter_by(id=car_id).first()
+            if carr is None:
+                response = ResponseObject.ResponseObject(obj=None, status='car not found!')
+                return jsonify(response.serialize())
+            if req.get("factory") is not None:
+                carr.factory = req.get("factory")
+            if req.get("kilometer") is not None:
+                carr.kilometer = req.get("kilometer")
+            if req.get("year") is not None:
+                carr.year = req.get("year")
+            if req.get("color") is not None:
+                carr.color = req.get("color")
+            if req.get("automate") is not None:
+                carr.automate = req.get("automate")
+            if req.get("description") is not None:
+                carr.description = req.get("description")
+            if req.get("price") is not None:
+                carr.price = req.get("price")
+            db.session.commit()
+            response = ResponseObject.ResponseObject(obj=None, status='OK')
+            return jsonify(response.serialize())
+        else:
+            response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
+            return jsonify(response.serialize())
