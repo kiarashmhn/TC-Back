@@ -107,3 +107,13 @@ class CarHandler():
         else:
             response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
             return jsonify(response.serialize())
+
+    @car.route('/<int:car_id>', methods=["GET"])
+    @login_required
+    def get_car(car_id):
+        carr = Car.query.filter_by(id=car_id).first()
+        if carr is None:
+            response = ResponseObject.ResponseObject(obj=None, status='car not found!')
+            return jsonify(response.serialize())
+        response = ResponseObject.ResponseObject(obj=carr, status='OK')
+        return jsonify(response.serialize())
