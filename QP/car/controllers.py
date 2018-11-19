@@ -17,6 +17,7 @@ class CarHandler():
     def __init__(self):
         pass
 
+    @staticmethod
     @car.route('', methods=["POST"])
     @login_required
     def add_car():
@@ -49,6 +50,7 @@ class CarHandler():
             response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
             return jsonify(response.serialize())
 
+    @staticmethod
     @car.route('/<int:car_id>', methods=["DELETE"])
     @login_required
     def delete_car(car_id):
@@ -68,6 +70,7 @@ class CarHandler():
             response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
             return jsonify(response.serialize())
 
+    @staticmethod
     @car.route('', methods=["GET"])
     @login_required
     def list_car():
@@ -78,6 +81,7 @@ class CarHandler():
         response = ResponseObject.ResponseObject(obj=cars, status='OK')
         return jsonify(response.serialize())
 
+    @staticmethod
     @car.route('/<int:car_id>', methods=["PUT"])
     @login_required
     def update_car(car_id):
@@ -108,6 +112,7 @@ class CarHandler():
             response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
             return jsonify(response.serialize())
 
+    @staticmethod
     @car.route('/<int:car_id>', methods=["GET"])
     @login_required
     def get_car(car_id):
