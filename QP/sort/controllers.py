@@ -20,9 +20,9 @@ class SortHandler():
         pass
 
     @staticmethod
-    @srt.route('cars/sort/<field>/<int:ascending>', methods=["GET"])
+    @srt.route('/cars/<field>/<int:ascending>', methods=["GET"])
     @login_required
-    def list_car(field, ascending):
+    def sort_car(field, ascending):
         if field == 'year':
             if ascending == 1:
                 cars = Car.query.filter(Car.year.isnot(None)).order_by(Car.year).all()
