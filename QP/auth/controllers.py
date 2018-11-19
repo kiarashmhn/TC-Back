@@ -56,7 +56,7 @@ class UserController():
             db.session.add(user)
             db.session.commit()
             login_user(user)
-            session['username'] = req.get("username")
+            session['user_id'] = user.id
             session['role'] = "user"
             print("signed in")
             response = ResponseObject.ResponseObject(obj=user, status='OK')
@@ -82,7 +82,7 @@ class UserController():
             response = ResponseObject.ResponseObject(obj=None, status=error)
             return jsonify(response.serialize())
         login_user(u)
-        session['username'] = req.get("username")
+        session['user_id'] = u.id
         session['role'] = u.role
         response = ResponseObject.ResponseObject(obj=u, status='OK')
         return jsonify(response.serialize())
@@ -92,7 +92,7 @@ class UserController():
     @auth.route('/logout', methods=["GET"])
     def logout():
         logout_user()
-        session.pop('username', None)
+        session.pop('user_id', None)
         session.pop('role', None)
         response = ResponseObject.ResponseObject(obj=None, status='OK')
         return jsonify(response.serialize())
