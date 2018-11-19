@@ -46,6 +46,26 @@ class CarHandler():
                 print("car added")
                 response = ResponseObject.ResponseObject(obj=carr, status='OK')
                 return jsonify(response.serialize())
+        elif session['role'] == "user":
+            if User.query.filter_by(id=session['user_id']).first() is None:
+                error = 'invalid user_id in session!'
+                response = ResponseObject.ResponseObject(obj=None, status=error)
+                return jsonify(response.serialize())
+            else:
+                carr = Car(name=req.get("name"),
+                           factory=req.get("factory"),
+                           kilometer=req.get("kilometer"),
+                           year=req.get("year"),
+                           color=req.get("color"),
+                           description=req.get("description"),
+                           automate=req.get("automate"),
+                           price=req.get("price"),
+                           user_id=session['user_id'])
+                db.session.add(carr)
+                db.session.commit()
+                print("car added")
+                response = ResponseObject.ResponseObject(obj=carr, status='OK')
+                return jsonify(response.serialize())
         else:
             response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
             return jsonify(response.serialize())
