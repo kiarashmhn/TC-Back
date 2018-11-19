@@ -56,5 +56,7 @@ class User(db.Model, UserMixin):
             'username': self.username,
             'email': self.email,
             'mobile_num': self.mobile_num,
-            'phone_num': self.mobile_num
+            'phone_num': self.mobile_num,
+            'role' : self.role,
+            'id' : self.id
         }
