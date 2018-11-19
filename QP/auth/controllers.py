@@ -16,6 +16,7 @@ class UserController():
     def __init__(self):
         pass
 
+    @staticmethod
     @auth.route('/signup', methods=["POST"])
     def signup():
         error = None
@@ -64,6 +65,7 @@ class UserController():
             response = ResponseObject.ResponseObject(obj=None, status=error)
             return jsonify(response.serialize())
 
+    @staticmethod
     @auth.route('/login', methods=["POST"])
     def login():
         req = request.get_json()
@@ -85,6 +87,8 @@ class UserController():
         response = ResponseObject.ResponseObject(obj=u, status='OK')
         return jsonify(response.serialize())
 
+    @staticmethod
+    @login_required
     @auth.route('/logout', methods=["GET"])
     def logout():
         logout_user()
