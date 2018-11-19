@@ -72,7 +72,6 @@ class CarHandler():
 
     @staticmethod
     @car.route('', methods=["GET"])
-    @login_required
     def list_car():
         cars = Car.query.all()
         if cars is None:
