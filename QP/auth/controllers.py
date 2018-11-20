@@ -47,10 +47,12 @@ class UserController():
                         password=req.get("password"),
                         lastName=req.get("lastName"),
                         age=req.get("age"),
-                        id=req.get("id"),
+                        identificationId=req.get("identificationId"),
                         address=req.get("address"),
                         gender=req.get("gender"),
                         postalCode=req.get("postalCode"),
+                        mobile_num=req.get("mobile_num"),
+                        phone_num=req.get("phone_num"),
                         email=req.get("email"),
                         role="user")
             db.session.add(user)
