@@ -9,7 +9,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(80))
     lastName = db.Column(db.String(20))
     age = db.Column(db.Integer)
-    identificationId = db.Column(db.Integer)
+    identificationId = db.Column(db.String(15))
     address = db.Column(db.String(200))
     gender = db.Column(db.String(20))
     postalCode = db.Column(db.String(21))
