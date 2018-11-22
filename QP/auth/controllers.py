@@ -64,7 +64,7 @@ class UserController():
             response = ResponseObject.ResponseObject(obj=user, status='OK')
             return jsonify(response.serialize())
         else:
-            response = ResponseObject.ResponseObject(obj=None, status=error)
+            response = ResponseObject.ResponseObject(obj=User(), status=error)
             return jsonify(response.serialize())
 
     @staticmethod
@@ -76,12 +76,12 @@ class UserController():
         error = None
         if username is None or password is None:
             error = 'username and password fields cannot be empty!'
-            response = ResponseObject.ResponseObject(obj=None, status=error)
+            response = ResponseObject.ResponseObject(obj=User(), status=error)
             return jsonify(response.serialize())
         u = User.get_by_username(username=username)
         if u is None or not u.check_password(password):
             error = 'invalid credentials!'
-            response = ResponseObject.ResponseObject(obj=None, status=error)
+            response = ResponseObject.ResponseObject(obj=User(), status=error)
             return jsonify(response.serialize())
         login_user(u)
         session['user_id'] = u.id
@@ -96,6 +96,6 @@ class UserController():
         logout_user()
         session.pop('user_id', None)
         session.pop('role', None)
-        response = ResponseObject.ResponseObject(obj=None, status='OK')
+        response = ResponseObject.ResponseObject(obj=User(), status='OK')
         return jsonify(response.serialize())
 

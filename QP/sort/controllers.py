@@ -29,7 +29,7 @@ class SortHandler():
             elif ascending == 0:
                 cars = Car.query.filter(Car.year.isnot(None)).order_by(desc(Car.year)).all()
             else:
-                response = ResponseObject.ResponseObject(obj=None, status='wrong input!')
+                response = ResponseObject.ResponseObject(obj=[Car()], status='wrong input!')
                 return jsonify(response.serialize())
         elif field == 'price':
             if ascending == 1:
@@ -37,13 +37,13 @@ class SortHandler():
             elif ascending == 0:
                 cars = Car.query.filter(Car.price.isnot(None)).order_by(desc(Car.price)).all()
             else:
-                response = ResponseObject.ResponseObject(obj=None, status='wrong input!')
+                response = ResponseObject.ResponseObject(obj=[Car()], status='wrong input!')
                 return jsonify(response.serialize())
         else:
-            response = ResponseObject.ResponseObject(obj=None, status='wrong field!')
+            response = ResponseObject.ResponseObject(obj=[Car()], status='wrong field!')
             return jsonify(response.serialize())
         if cars is None:
-            response = ResponseObject.ResponseObject(obj=None, status='no cars in the database!')
+            response = ResponseObject.ResponseObject(obj=[Car()], status='no cars in the database!')
             return jsonify(response.serialize())
         response = ResponseObject.ResponseObject(obj=cars, status='OK')
         return jsonify(response.serialize())

@@ -25,11 +25,11 @@ class CarHandler():
         if session['role'] == "admin":
             if req.get("user_id") is None:
                 error = 'user_id field cannot be empty!'
-                response = ResponseObject.ResponseObject(obj=None, status=error)
+                response = ResponseObject.ResponseObject(obj=Car(), status=error)
                 return jsonify(response.serialize())
             elif User.query.filter_by(id=req.get("user_id")).first() is None:
                 error = 'invalid user_id!'
-                response = ResponseObject.ResponseObject(obj=None, status=error)
+                response = ResponseObject.ResponseObject(obj=Car(), status=error)
                 return jsonify(response.serialize())
             else:
                 carr = Car(name=req.get("name"),
@@ -49,7 +49,7 @@ class CarHandler():
         elif session['role'] == "user":
             if User.query.filter_by(id=session['user_id']).first() is None:
                 error = 'invalid user_id in session!'
-                response = ResponseObject.ResponseObject(obj=None, status=error)
+                response = ResponseObject.ResponseObject(obj=Car(), status=error)
                 return jsonify(response.serialize())
             else:
                 carr = Car(name=req.get("name"),
@@ -67,7 +67,7 @@ class CarHandler():
                 response = ResponseObject.ResponseObject(obj=carr, status='OK')
                 return jsonify(response.serialize())
         else:
-            response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
+            response = ResponseObject.ResponseObject(obj=Car(), status='this url is not accessible for you!')
             return jsonify(response.serialize())
 
     @staticmethod
@@ -76,18 +76,18 @@ class CarHandler():
     def delete_car(car_id):
         if session['role'] == "admin":
             if car_id is None:
-                response = ResponseObject.ResponseObject(obj=None, status='car_id cannot be empty!')
+                response = ResponseObject.ResponseObject(obj=Car(), status='car_id cannot be empty!')
                 return jsonify(response.serialize())
             carr = Car.query.filter_by(id=car_id).first()
             if carr is None:
-                response = ResponseObject.ResponseObject(obj=None, status='invalid car_id!')
+                response = ResponseObject.ResponseObject(obj=Car(), status='invalid car_id!')
                 return jsonify(response.serialize())
             db.session.delete(carr)
             db.session.commit()
-            response = ResponseObject.ResponseObject(obj=None, status='OK')
+            response = ResponseObject.ResponseObject(obj=Car(), status='OK')
             return jsonify(response.serialize())
         else:
-            response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
+            response = ResponseObject.ResponseObject(obj=Car(), status='this url is not accessible for you!')
             return jsonify(response.serialize())
 
     @staticmethod
@@ -95,7 +95,7 @@ class CarHandler():
     def list_car():
         cars = Car.query.all()
         if cars is None:
-            response = ResponseObject.ResponseObject(obj=None, status='there are no cars in the database!')
+            response = ResponseObject.ResponseObject(obj=Car(), status='there are no cars in the database!')
             return jsonify(response.serialize())
         response = ResponseObject.ResponseObject(obj=cars, status='OK')
         return jsonify(response.serialize())
@@ -108,7 +108,7 @@ class CarHandler():
         if session['role'] == "admin":
             carr = Car.query.filter_by(id=car_id).first()
             if carr is None:
-                response = ResponseObject.ResponseObject(obj=None, status='car not found!')
+                response = ResponseObject.ResponseObject(obj=Car(), status='car not found!')
                 return jsonify(response.serialize())
             if req.get("factory") is not None:
                 carr.factory = req.get("factory")
@@ -125,10 +125,10 @@ class CarHandler():
             if req.get("price") is not None:
                 carr.price = req.get("price")
             db.session.commit()
-            response = ResponseObject.ResponseObject(obj=None, status='OK')
+            response = ResponseObject.ResponseObject(obj=Car(), status='OK')
             return jsonify(response.serialize())
         else:
-            response = ResponseObject.ResponseObject(obj=None, status='this url is not accessible for you!')
+            response = ResponseObject.ResponseObject(obj=Car(), status='this url is not accessible for you!')
             return jsonify(response.serialize())
 
     @staticmethod
@@ -137,7 +137,7 @@ class CarHandler():
     def get_car(car_id):
         carr = Car.query.filter_by(id=car_id).first()
         if carr is None:
-            response = ResponseObject.ResponseObject(obj=None, status='car not found!')
+            response = ResponseObject.ResponseObject(obj=Car(), status='car not found!')
             return jsonify(response.serialize())
         response = ResponseObject.ResponseObject(obj=carr, status='OK')
         return jsonify(response.serialize())
