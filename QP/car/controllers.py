@@ -61,6 +61,36 @@ class CarHandler():
         responses:
             200:
               description: All responses have 200 status code; check the status field.
+              schema:
+                type: object
+                properties:
+                  object:
+                    type: object
+                    properties:
+                        name:
+                            default: ali
+                            type: string
+                        factory:
+                            type: string
+                            default: bmw
+                        kilometer:
+                            type: integer
+                        year:
+                            type: integer
+                        color:
+                            type: string
+                        description:
+                            type: string
+                        automate:
+                            type: integer
+                        price:
+                            type: integer
+                        user_id:
+                            type: integer
+                        id:
+                            type: integer
+                  status:
+                    type: string
             200,status="OK":
               description: Car successfully added; And is returned in response.
             200,status="user_id field cannot be empty!":
@@ -138,6 +168,36 @@ class CarHandler():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+                type: object
+                properties:
+                  object:
+                    type: object
+                    properties:
+                        name:
+                            default: ali
+                            type: string
+                        factory:
+                            type: string
+                            default: bmw
+                        kilometer:
+                            type: integer
+                        year:
+                            type: integer
+                        color:
+                            type: string
+                        description:
+                            type: string
+                        automate:
+                            type: integer
+                        price:
+                            type: integer
+                        user_id:
+                            type: integer
+                        id:
+                            type: integer
+                  status:
+                    type: string
           200,status="OK":
             description: Car successfully deleted.
           200,status="car_id cannot be empty!":
@@ -177,6 +237,38 @@ class CarHandler():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+                type: object
+                properties:
+                  object:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                            default: ali
+                            type: string
+                        factory:
+                            type: string
+                            default: bmw
+                        kilometer:
+                            type: integer
+                        year:
+                            type: integer
+                        color:
+                            type: string
+                        description:
+                            type: string
+                        automate:
+                            type: integer
+                        price:
+                            type: integer
+                        user_id:
+                            type: integer
+                        id:
+                            type: integer
+                  status:
+                    type: string
           200,status="OK":
             description: Successfully returned the list of cars.
           200,status="there are no cars in the database!":
@@ -208,8 +300,38 @@ class CarHandler():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+                type: object
+                properties:
+                  object:
+                    type: object
+                    properties:
+                        name:
+                            default: ali
+                            type: string
+                        factory:
+                            type: string
+                            default: bmw
+                        kilometer:
+                            type: integer
+                        year:
+                            type: integer
+                        color:
+                            type: string
+                        description:
+                            type: string
+                        automate:
+                            type: integer
+                        price:
+                            type: integer
+                        user_id:
+                            type: integer
+                        id:
+                            type: integer
+                  status:
+                    type: string
           200,status="OK":
-            description: Car successfully deleted.
+            description: Car successfully updated.
           200,status="Car not found!":
             description: Car wasn't updated because of the message in status.
           200,status="this url is not accessible for you!":
@@ -263,6 +385,36 @@ class CarHandler():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+                type: object
+                properties:
+                  object:
+                    type: object
+                    properties:
+                        name:
+                            default: ali
+                            type: string
+                        factory:
+                            type: string
+                            default: bmw
+                        kilometer:
+                            type: integer
+                        year:
+                            type: integer
+                        color:
+                            type: string
+                        description:
+                            type: string
+                        automate:
+                            type: integer
+                        price:
+                            type: integer
+                        user_id:
+                            type: integer
+                        id:
+                            type: integer
+                  status:
+                    type: string
           200,status="OK":
             description: Car successfully returned.
           200,status="Car not found!":

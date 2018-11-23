@@ -43,6 +43,38 @@ class SortHandler():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+                type: object
+                properties:
+                  object:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        name:
+                            default: ali
+                            type: string
+                        factory:
+                            type: string
+                            default: bmw
+                        kilometer:
+                            type: integer
+                        year:
+                            type: integer
+                        color:
+                            type: string
+                        description:
+                            type: string
+                        automate:
+                            type: integer
+                        price:
+                            type: integer
+                        user_id:
+                            type: integer
+                        id:
+                            type: integer
+                  status:
+                    type: string
           200,status="OK":
             description: Cars successfully sorted; and returned in response.
           200,status="wrong input!":

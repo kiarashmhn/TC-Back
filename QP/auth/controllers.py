@@ -54,6 +54,58 @@ class UserController():
             responses:
               200:
                     description: All responses have 200 status code; check the status field.
+                    schema:
+                        type: object
+                        properties:
+                            object:
+                                type: object
+                                properties:
+                                    username:
+                                        default: ali
+                                        type: string
+                                    password:
+                                        type: string
+                                        default: 123456789
+                                    email:
+                                        type: string
+                                        default: ali@gmail.com
+                                    identificationId:
+                                        type: string
+                                        default: 0020738528
+                                    address:
+                                        type: string
+                                        default: tehran
+                                    age:
+                                        type: integer
+                                        default: 27
+                                    gender:
+                                        type: string
+                                        default: male
+                                    id:
+                                        type: integer
+                                        default: 2
+                                    lastName:
+                                        type: string
+                                        default: erf
+                                    mobile_num:
+                                        type: string
+                                        default: 09102998841
+                                    phone_num:
+                                        type: string
+                                        default: 02188461197
+                                    name:
+                                        type: string
+                                        default: ali
+                                    postalCode:
+                                        type: integer
+                                        default: 1565935871
+                                    role:
+                                        type: string
+                                        default: user
+                            status:
+                                type: string
+                                default: OK
+
               200,status="OK":
                     description: User successfully created; And is returned in response.
               200,status="username field cannot be empty!":
@@ -149,8 +201,60 @@ class UserController():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+                type: object
+                properties:
+                    object:
+                        type: object
+                        properties:
+                            username:
+                                default: ali
+                                type: string
+                            password:
+                                type: string
+                                default: 123456789
+                            email:
+                                type: string
+                                default: ali@gmail.com
+                            identificationId:
+                                type: string
+                                default: 0020738528
+                            address:
+                                type: string
+                                default: tehran
+                            age:
+                                type: integer
+                                default: 27
+                            gender:
+                                type: string
+                                default: male
+                            id:
+                                type: integer
+                                default: 2
+                            lastName:
+                                type: string
+                                default: erf
+                            mobile_num:
+                                type: string
+                                default: 09102998841
+                            phone_num:
+                                type: string
+                                default: 02188461197
+                            name:
+                                type: string
+                                default: ali
+                            postalCode:
+                                type: integer
+                                default: 1565935871
+                            role:
+                                type: string
+                                default: user
+                    status:
+                        type: string
+                        default: OK
           200,status="OK":
             description: User successfully logged in; And is returned in response.
+
           200,status="username and password fields cannot be empty!":
             description: User wasn't logged in because of the message in status.
           200,status="invalid credentials!":
@@ -190,6 +294,14 @@ class UserController():
         responses:
           200:
             description: All responses have 200 status code; check the status field.
+            schema:
+            type: object
+            properties:
+                object:
+                    type: none
+                status:
+                    type: string
+                    default: OK
           200,status="OK":
             description: User successfully created; And is returned in response.
           401:
