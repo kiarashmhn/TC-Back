@@ -19,6 +19,58 @@ class UserController():
     @staticmethod
     @auth.route('/signup', methods=["POST"])
     def signup():
+        """
+            This is the Signup API
+            Call this api passing username,email,password,identificationId in request body and signup a new user
+            ---
+            tags:
+              - SignUp API
+            consumes:
+              - application/json
+            parameters:
+              - in: body
+                name: user
+                description: The User to create.
+                schema:
+                  type: object
+                  required:
+                    - username
+                    - password
+                    - email
+                    - identificationId
+                  properties:
+                    username:
+                        default: ali
+                        type: string
+                    password:
+                        type: string
+                        default: 123456789
+                    email:
+                        type: string
+                        default: ali@gmail.com
+                    identificationId:
+                        type: string
+                        default: 0020738528
+            responses:
+              200:
+                    description: All responses have 200 status code; check the status field.
+              200,status="OK":
+                    description: User successfully created; And is returned in response.
+              200,status="username field cannot be empty!":
+                    description: User wasn't created because of the message in status.
+              200,status="user with this username already exists!":
+                    description: User wasn't created because of the message in status.
+              200,status="identificationId field cannot be empty!":
+                    description: User wasn't created because of the message in status.
+              200,status="user with this id already exists!":
+                    description: User wasn't created because of the message in status.
+              200,status="email field cannot be empty!":
+                    description: User wasn't created because of the message in status.
+              200,status="user with this email already exists!":
+                    description: User wasn't created because of the message in status.
+              200,status="password field cannot be empty!":
+                    description: User wasn't created because of the message in status.
+        """
         error = None
         req = request.get_json()
         if req.get("username") is None:
@@ -70,6 +122,40 @@ class UserController():
     @staticmethod
     @auth.route('/login', methods=["POST"])
     def login():
+        """
+        This is the Login API
+        Call this api passing username,password in request body to login.
+        ---
+        tags:
+          - Login API
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: user
+            description: The username and password fields of the user.
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  default: ali
+                  type: string
+                password:
+                  type: string
+                  default: 123456789
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: User successfully logged in; And is returned in response.
+          200,status="username and password fields cannot be empty!":
+            description: User wasn't logged in because of the message in status.
+          200,status="invalid credentials!":
+            description: User wasn't logged in because of the message in status.
+                """
         req = request.get_json()
         username = req.get("username")
         password = req.get("password")
@@ -93,9 +179,24 @@ class UserController():
     @login_required
     @auth.route('/logout', methods=["GET"])
     def logout():
+        """
+        This is the LogOut API
+        Call this api to logout.
+        ---
+        tags:
+          - LogOut API
+        consumes:
+          - application/json
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: User successfully created; And is returned in response.
+          401:
+            description: You aren't logged in
+        """
         logout_user()
         session.pop('user_id', None)
         session.pop('role', None)
         response = ResponseObject.ResponseObject(obj=User(), status='OK')
         return jsonify(response.serialize())
-

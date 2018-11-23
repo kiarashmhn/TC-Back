@@ -21,6 +21,55 @@ class CarHandler():
     @car.route('', methods=["POST"])
     @login_required
     def add_car():
+        """
+        This is the AddCar API
+        Call this api passing a car in request body to add it.
+        ---
+        tags:
+          - AddCar API
+        consumes:
+          - application/json
+        parameters:
+          - in: body
+            name: car
+            description: The car to add to database.
+            schema:
+              type: object
+              required:
+                - user_id
+              properties:
+                name:
+                    default: ali
+                    type: string
+                factory:
+                    type: string
+                    default: bmw
+                kilometer:
+                    type: integer
+                year:
+                    type: integer
+                color:
+                    type: string
+                description:
+                    type: string
+                automate:
+                    type: integer
+                price:
+                    type: integer
+                user_id:
+                    type: integer
+        responses:
+            200:
+              description: All responses have 200 status code; check the status field.
+            200,status="OK":
+              description: Car successfully added; And is returned in response.
+            200,status="user_id field cannot be empty!":
+              description: Car wasn't added because of the message in status.
+            200,status="invalid user_id!":
+              description: Car wasn't added because of the message in status.
+            401:
+              description: You aren't logged in
+        """
         req = request.get_json()
         if session['role'] == "admin":
             if req.get("user_id") is None:
@@ -74,6 +123,32 @@ class CarHandler():
     @car.route('/<int:car_id>', methods=["DELETE"])
     @login_required
     def delete_car(car_id):
+        """
+        This is the DeleteCar API
+        Call this api passing a car_id in the path to delete it.
+        ---
+        tags:
+          - DeleteCar API
+        parameters:
+          - name: car_id
+            in: path
+            type: integer
+            required: true
+            description: id of the car you want to delete
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: Car successfully deleted.
+          200,status="car_id cannot be empty!":
+            description: Car wasn't deleted because of the message in status.
+          200,status="invalid car_id!":
+            description: Car wasn't deleted because of the message in status.
+          200,status="this url is not accessible for you!":
+            description: Car wasn't deleted because you are not an admin.
+          401:
+            description: You aren't logged in
+        """
         if session['role'] == "admin":
             if car_id is None:
                 response = ResponseObject.ResponseObject(obj=Car(), status='car_id cannot be empty!')
@@ -93,6 +168,20 @@ class CarHandler():
     @staticmethod
     @car.route('', methods=["GET"])
     def list_car():
+        """
+        This is the ListCar API
+        Call this api to get the list of cars.
+        ---
+        tags:
+          - ListCar API
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: Successfully returned the list of cars.
+          200,status="there are no cars in the database!":
+            description: No cars!
+        """
         cars = Car.query.all()
         if cars is None:
             response = ResponseObject.ResponseObject(obj=Car(), status='there are no cars in the database!')
@@ -104,6 +193,30 @@ class CarHandler():
     @car.route('/<int:car_id>', methods=["PUT"])
     @login_required
     def update_car(car_id):
+        """
+        This is the UpdateCar API
+        Call this api passing a car_id in the path to update it.
+        ---
+        tags:
+          - UpdateCar API
+        parameters:
+          - name: car_id
+            in: path
+            type: integer
+            required: true
+            description: id of the car you want to update
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: Car successfully deleted.
+          200,status="Car not found!":
+            description: Car wasn't updated because of the message in status.
+          200,status="this url is not accessible for you!":
+            description: Car wasn't updated because you are not an admin.
+          401:
+            description: You aren't logged in
+        """
         req = request.get_json()
         if session['role'] == "admin":
             carr = Car.query.filter_by(id=car_id).first()
@@ -135,6 +248,29 @@ class CarHandler():
     @car.route('/<int:car_id>', methods=["GET"])
     @login_required
     def get_car(car_id):
+        """
+        This is the GetCar API
+        Call this api passing a car_id in the path to get it.
+        ---
+        tags:
+          - GetCar API
+        parameters:
+          - name: car_id
+            in: path
+            type: integer
+            required: true
+            description: id of the car you want to get
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: Car successfully returned.
+          200,status="Car not found!":
+            description: Car wasn't returned because of the message in status.
+          401:
+            description: You aren't logged in
+        """
+
         carr = Car.query.filter_by(id=car_id).first()
         if carr is None:
             response = ResponseObject.ResponseObject(obj=Car(), status='car not found!')

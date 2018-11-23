@@ -23,6 +23,37 @@ class SortHandler():
     @srt.route('/cars/<field>/<int:ascending>', methods=["GET"])
     @login_required
     def sort_car(field, ascending):
+        """
+        This is the SortCars API
+        Call this api passing the field you want to sort cars by in the path, and 1 to sort it ascending or 0 otherwise.
+        ---
+        tags:
+          - SortCars API
+        parameters:
+          - name: field
+            in: path
+            type: string
+            required: true
+            description: the field you want to sort by.
+          - name: ascending
+            in: path
+            type: integer
+            required: true
+            description: ascending or descending.
+        responses:
+          200:
+            description: All responses have 200 status code; check the status field.
+          200,status="OK":
+            description: Cars successfully sorted; and returned in response.
+          200,status="wrong input!":
+            description: invalid ascending field!
+          200,status="wrong field!":
+            description: invalid field of car!
+          200,status="no cars in the database!":
+            description: empty database!
+          401:
+            description: You aren't logged in.
+        """
         if field == 'year':
             if ascending == 1:
                 cars = Car.query.filter(Car.year.isnot(None)).order_by(Car.year).all()
