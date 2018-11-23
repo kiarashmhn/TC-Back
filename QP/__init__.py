@@ -3,6 +3,7 @@ from flask import Flask, request, jsonify, redirect, render_template, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flasgger import Swagger
+from flask_cors import CORS
 
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -16,7 +17,8 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.session_protection = 'strong'
 login_manager.init_app(app)
-
+cors = CORS(resources={r"/api/*": {"origins": "*"}})
+cors.init_app(app)
 
 from QP.auth.controllers import auth
 from QP.auth.models import User
