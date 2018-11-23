@@ -101,6 +101,9 @@ class CarHandler():
               description: You aren't logged in
         """
         req = request.get_json()
+        if req is None:
+            response = ResponseObject.ResponseObject(obj=Car(), status='request body can not be empty!')
+            return jsonify(response.serialize())
         if session['role'] == "admin":
             if req.get("user_id") is None:
                 error = 'user_id field cannot be empty!'

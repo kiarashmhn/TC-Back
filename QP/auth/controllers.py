@@ -125,6 +125,9 @@ class UserController():
         """
         error = None
         req = request.get_json()
+        if req is None:
+            response = ResponseObject.ResponseObject(obj=User(), status='request body can not be empty!')
+            return jsonify(response.serialize())
         if req.get("username") is None:
             error = 'username field cannot be empty!'
         else:
@@ -261,6 +264,9 @@ class UserController():
             description: User wasn't logged in because of the message in status.
                 """
         req = request.get_json()
+        if req is None:
+            response = ResponseObject.ResponseObject(obj=User(), status='request body can not be empty!')
+            return jsonify(response.serialize())
         username = req.get("username")
         password = req.get("password")
         error = None
