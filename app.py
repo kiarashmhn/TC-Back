@@ -1,3 +1,4 @@
+from flask import request, abort
 from flask_migrate import Migrate, MigrateCommand
 from QP import app, db
 from QP.auth.models import User
@@ -38,6 +39,12 @@ def dropdb():
 @manager.command
 def run():
     app.run(debug=True, host='0.0.0.0')
+
+
+@app.before_request
+def before_request():
+    if not request.is_json and request.method == 'POST':
+        return abort(400, "Bad request")
 
 
 if __name__ == '__main__':
