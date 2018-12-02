@@ -318,3 +318,17 @@ class UserController():
         session.pop('role', None)
         response = ResponseObject.ResponseObject(obj=User(), status='OK')
         return jsonify(response.serialize())
+
+    @staticmethod
+    @login_required
+    @usr.route('', methods=["GET"])
+    def list_users():
+        if session['role'] == "super_admin" or session['role'] == "admin":
+            users = User.query.all()
+            if users is None:
+                response = ResponseObject.ResponseObject(obj=[User()], status='there are no users in the database!')
+                return jsonify(response.serialize())
+            response = ResponseObject.ResponseObject(obj=users, status='OK')
+            return jsonify(response.serialize())
+        response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
+        return jsonify(response.serialize())
