@@ -1,7 +1,7 @@
 from flask import request, abort
 from flask_migrate import Migrate, MigrateCommand
 from QP import app, db
-from QP.auth.models import User
+from QP.user.models import User
 from QP.car.models import Car
 from flask_script import Manager, prompt_bool
 manager = Manager(app)

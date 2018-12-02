@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify, redirect, render_template, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, current_user
 from QP import db, app
-from QP.auth.models import User
+from QP.user.models import User
 from QP.car.models import Car
 from flask_login import login_required, login_user, logout_user, current_user
 from QP import ResponseObject

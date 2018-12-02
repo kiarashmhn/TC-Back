@@ -1,7 +1,7 @@
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 from QP import db
-from QP.auth.models import User
+from QP.user.models import User
 
 
 class Car(db.Model):

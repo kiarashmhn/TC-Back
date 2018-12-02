@@ -4,12 +4,12 @@ from flask import Flask, request, jsonify, redirect, render_template, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, current_user
 from QP import db, app
-from QP.auth.models import User
+from QP.user.models import User
 from flask_login import login_required, login_user, logout_user, current_user
 from QP import ResponseObject
 from flask import Blueprint
 
-auth = Blueprint('auth', __name__)
+usr = Blueprint('usr', __name__)
 
 
 class UserController():
@@ -17,7 +17,7 @@ class UserController():
         pass
 
     @staticmethod
-    @auth.route('/signup', methods=["POST"])
+    @usr.route('/signup', methods=["POST"])
     def signup():
         """
             This is the Signup API
@@ -175,7 +175,7 @@ class UserController():
             return jsonify(response.serialize())
 
     @staticmethod
-    @auth.route('/login', methods=["POST"])
+    @usr.route('/login', methods=["POST"])
     def login():
         """
         This is the Login API
@@ -287,7 +287,7 @@ class UserController():
 
     @staticmethod
     @login_required
-    @auth.route('/logout', methods=["GET"])
+    @usr.route('/logout', methods=["GET"])
     def logout():
         """
         This is the LogOut API
