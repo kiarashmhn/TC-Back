@@ -12,7 +12,7 @@ manager.add_command('db', MigrateCommand)
 @manager.command
 def initdb():
     db.create_all()
-    user = User(name="admin", username="admin", password="admin", role="admin")
+    user = User(name="admin", username="admin", password="admin", role="super_admin")
     db.session.add(user)
     db.session.commit()
     car = Car(name="peykan", factory="bmw", kilometer=0, year=1931, color="sefid yakhchali",

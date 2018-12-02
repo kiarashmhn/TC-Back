@@ -104,7 +104,7 @@ class CarHandler():
         if req is None:
             response = ResponseObject.ResponseObject(obj=Car(), status='request body can not be empty!')
             return jsonify(response.serialize())
-        if session['role'] == "admin":
+        if session['role'] == "admin" or session['role'] == "super_admin":
             if req.get("user_id") is None:
                 error = 'user_id field cannot be empty!'
                 response = ResponseObject.ResponseObject(obj=Car(), status=error)
@@ -212,7 +212,7 @@ class CarHandler():
           401:
             description: You aren't logged in
         """
-        if session['role'] == "admin":
+        if session['role'] == "admin" or session['role'] == "super_admin":
             if car_id is None:
                 response = ResponseObject.ResponseObject(obj=Car(), status='car_id cannot be empty!')
                 return jsonify(response.serialize())
@@ -343,7 +343,7 @@ class CarHandler():
             description: You aren't logged in
         """
         req = request.get_json()
-        if session['role'] == "admin":
+        if session['role'] == "admin" or session['role'] == "super_admin":
             carr = Car.query.filter_by(id=car_id).first()
             if carr is None:
                 response = ResponseObject.ResponseObject(obj=Car(), status='car not found!')
