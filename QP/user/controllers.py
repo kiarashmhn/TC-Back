@@ -403,3 +403,60 @@ class UserController():
             return jsonify(response.serialize())
         response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
         return jsonify(response.serialize())
+
+    @staticmethod
+    @login_required
+    @usr.route('/<int:user_id>', methods=["DELETE"])
+    def delete_user(user_id):
+        """
+        This is the DeleteUser API
+        Call this api passing a user_id in the path to delete it.
+        ---
+        tags:
+            - DeleteUser API
+        parameters:
+            - name: user_id
+              in: path
+              type: integer
+              required: true
+              description: id of the user you want to delete
+        responses:
+            200:
+                description: All responses have 200 status code; check the status field.
+            200,status="OK":
+                description: User successfully deleted.
+            200,status="user_id cannot be empty!":
+                description: User wasn't deleted because of the message in status.
+            200,status="invalid user_id!":
+                description: User wasn't deleted because of the message in status.
+            200,status="this url is not accessible for you!":
+                description: User wasn't deleted because you are not an admin.
+            200,status="you can not delete this user!":
+                description: The user you're trying to remove is an admin!
+            401:
+                description: You aren't logged in
+        """
+        if 'role' not in session:
+            response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
+            return jsonify(response.serialize())
+        if session['role'] == "admin" or session['role'] == "super_admin":
+            if user_id is None:
+                response = ResponseObject.ResponseObject(obj=User(), status='user_id cannot be empty!')
+                return jsonify(response.serialize())
+            user = User.query.filter_by(id=user_id).first()
+            if user is None:
+                response = ResponseObject.ResponseObject(obj=User(), status='invalid user_id!')
+                return jsonify(response.serialize())
+            if user.role == "super_admin":
+                response = ResponseObject.ResponseObject(obj=User(), status='you can not delete this user!')
+                return jsonify(response.serialize())
+            if user.role == "admin" and session['role'] == "admin":
+                response = ResponseObject.ResponseObject(obj=User(), status='you can not delete this user!')
+                return jsonify(response.serialize())
+            db.session.delete(user)
+            db.session.commit()
+            response = ResponseObject.ResponseObject(obj=User(), status='OK')
+            return jsonify(response.serialize())
+        else:
+            response = ResponseObject.ResponseObject(obj=User(), status='this url is not accessible for you!')
+            return jsonify(response.serialize())
