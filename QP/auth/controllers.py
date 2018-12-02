@@ -162,11 +162,11 @@ class UserController():
                         phone_num=req.get("phone_num"),
                         email=req.get("email"),
                         role="user")
+            if 'role' in session:
+                if session['role'] == "super_admin":
+                    user.role = req.get("role")
             db.session.add(user)
             db.session.commit()
-            login_user(user)
-            session['user_id'] = user.id
-            session['role'] = "user"
             print("signed in")
             response = ResponseObject.ResponseObject(obj=user, status='OK')
             return jsonify(response.serialize())
