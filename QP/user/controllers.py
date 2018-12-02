@@ -323,6 +323,77 @@ class UserController():
     @login_required
     @usr.route('', methods=["GET"])
     def list_users():
+        """
+        This is the ListUsers API
+        Call this api to get the list of users.
+        ---
+        tags:
+            - ListUsers API
+        responses:
+            200:
+              description: All responses have 200 status code; check the status field.
+              schema:
+              type: object
+              properties:
+                object:
+                    type: array
+                    items:
+                        type: object
+                        properties:
+                            username:
+                                default: ali
+                                type: string
+                            email:
+                                type: string
+                                default: ali@gmail.com
+                            identificationId:
+                                type: string
+                                default: 0020738528
+                            address:
+                                type: string
+                                default: tehran
+                            age:
+                                type: integer
+                                default: 27
+                            gender:
+                                type: string
+                                default: male
+                            id:
+                                type: integer
+                                default: 2
+                            lastName:
+                                type: string
+                                default: erf
+                            mobile_num:
+                                type: string
+                                default: 09102998841
+                            phone_num:
+                                type: string
+                                default: 02188461197
+                            name:
+                                type: string
+                                default: ali
+                            postalCode:
+                                type: integer
+                                default: 1565935871
+                            role:
+                                type: string
+                                default: user
+                status:
+                    type: string
+
+            200,status="OK":
+                description: Successfully returned the list of users.
+            200,status="there are no users in the database!":
+                description: No cars!
+            200,status="this url is not accessible for you!":
+                description: You are not an admin!
+            401:
+                description: You haven't logged in!
+        """
+        if 'role' not in session:
+            response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
+            return jsonify(response.serialize())
         if session['role'] == "super_admin" or session['role'] == "admin":
             users = User.query.all()
             if users is None:
