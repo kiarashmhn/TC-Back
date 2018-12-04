@@ -335,9 +335,9 @@ class CarHandler():
           200,status="OK":
             description: Car successfully updated.
           200,status="Car not found!":
-            description: Car wasn't updated because of the message in status.
-          200,status="this url is not accessible for you!":
-            description: Car wasn't updated because you are not an admin.
+            description: Car not found!
+          200,status="you can not update this car!":
+            description: You can't update this car because it is'nt yours.
           401:
             description: You aren't logged in
         """
