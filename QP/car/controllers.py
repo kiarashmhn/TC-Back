@@ -432,3 +432,62 @@ class CarHandler():
             return jsonify(response.serialize())
         response = ResponseObject.ResponseObject(obj=carr, status='OK')
         return jsonify(response.serialize())
+
+    @staticmethod
+    @car.route('/user', methods=["GET"])
+    def get_user_cars():
+        """
+                This is the GetUser'sCars API
+                Call this api to get the list of your cars.
+                ---
+                tags:
+                  - GetUser'sCars API
+                responses:
+                    200:
+                        description: All responses have 200 status code; check the status field.
+                        schema:
+                            type: object
+                            properties:
+                                object:
+                                    type: array
+                                    items:
+                                        type: object
+                                        properties:
+                                            name:
+                                                default: ali
+                                                type: string
+                                            factory:
+                                                type: string
+                                                default: bmw
+                                            kilometer:
+                                                type: integer
+                                            year:
+                                                type: integer
+                                            color:
+                                                type: string
+                                            description:
+                                                type: string
+                                            automate:
+                                                type: integer
+                                            price:
+                                                type: integer
+                                            user_id:
+                                                type: integer
+                                            id:
+                                                type: integer
+                                status:
+                                    type: string
+                    200,status="Invalid user_id!":
+                        description: Invalid user_id!
+                    401:
+                        description: You are not logged in!
+        """
+        if 'role' not in session or 'user_id' not in session:
+            response = ResponseObject.ResponseObject(obj=[Car()], status='this url is not accessible for you!')
+            return jsonify(response.serialize())
+        u = User.query.filter_by(id=session['user_id']).first()
+        if u is None:
+            response = ResponseObject.ResponseObject(obj=[Car()], status='invalid user_id!')
+            return jsonify(response.serialize())
+        response = ResponseObject.ResponseObject(obj=u.cars, status='OK')
+        return jsonify(response.serialize())
