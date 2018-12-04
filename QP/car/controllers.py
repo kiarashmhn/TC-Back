@@ -212,21 +212,20 @@ class CarHandler():
           401:
             description: You aren't logged in
         """
-        if session['role'] == "admin" or session['role'] == "super_admin":
-            if car_id is None:
-                response = ResponseObject.ResponseObject(obj=Car(), status='car_id cannot be empty!')
-                return jsonify(response.serialize())
-            carr = Car.query.filter_by(id=car_id).first()
-            if carr is None:
-                response = ResponseObject.ResponseObject(obj=Car(), status='invalid car_id!')
-                return jsonify(response.serialize())
-            db.session.delete(carr)
-            db.session.commit()
-            response = ResponseObject.ResponseObject(obj=Car(), status='OK')
+        if car_id is None:
+            response = ResponseObject.ResponseObject(obj=Car(), status='car_id cannot be empty!')
             return jsonify(response.serialize())
-        else:
-            response = ResponseObject.ResponseObject(obj=Car(), status='this url is not accessible for you!')
+        carr = Car.query.filter_by(id=car_id).first()
+        if carr is None:
+            response = ResponseObject.ResponseObject(obj=Car(), status='invalid car_id!')
             return jsonify(response.serialize())
+        if session['role'] == "user" and carr not in current_user.cars:
+            response = ResponseObject.ResponseObject(obj=Car(), status='you can not delete this car!')
+            return jsonify(response.serialize())
+        db.session.delete(carr)
+        db.session.commit()
+        response = ResponseObject.ResponseObject(obj=Car(), status='OK')
+        return jsonify(response.serialize())
 
     @staticmethod
     @car.route('', methods=["GET"])
