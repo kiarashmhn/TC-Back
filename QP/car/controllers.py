@@ -204,11 +204,11 @@ class CarHandler():
           200,status="OK":
             description: Car successfully deleted.
           200,status="car_id cannot be empty!":
-            description: Car wasn't deleted because of the message in status.
+            description: Car_id cannot be empty.
           200,status="invalid car_id!":
-            description: Car wasn't deleted because of the message in status.
-          200,status="this url is not accessible for you!":
-            description: Car wasn't deleted because you are not an admin.
+            description: Car wasn't found.
+          200,status="you can not delete this car!":
+            description: You can not delete this car because this car isn't yours.
           401:
             description: You aren't logged in
         """
