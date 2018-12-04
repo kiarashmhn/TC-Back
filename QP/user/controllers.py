@@ -437,7 +437,7 @@ class UserController():
                 description: You aren't logged in
         """
         if 'role' not in session:
-            response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
+            response = ResponseObject.ResponseObject(obj=User(), status='this url is not accessible for you!')
             return jsonify(response.serialize())
         if session['role'] == "admin" or session['role'] == "super_admin":
             if user_id is None:
