@@ -447,16 +447,16 @@ class UserController():
             if user is None:
                 response = ResponseObject.ResponseObject(obj=User(), status='invalid user_id!')
                 return jsonify(response.serialize())
-            if user.role == "super_admin":
+            if user.role == "user" or session['role'] == "super_admin":
+                for car in user.cars:
+                    db.session.delete(car)
+                db.session.delete(user)
+                db.session.commit()
+                response = ResponseObject.ResponseObject(obj=User(), status='OK')
+                return jsonify(response.serialize())
+            else:
                 response = ResponseObject.ResponseObject(obj=User(), status='you can not delete this user!')
                 return jsonify(response.serialize())
-            if user.role == "admin" and session['role'] == "admin":
-                response = ResponseObject.ResponseObject(obj=User(), status='you can not delete this user!')
-                return jsonify(response.serialize())
-            db.session.delete(user)
-            db.session.commit()
-            response = ResponseObject.ResponseObject(obj=User(), status='OK')
-            return jsonify(response.serialize())
         else:
             response = ResponseObject.ResponseObject(obj=User(), status='this url is not accessible for you!')
             return jsonify(response.serialize())
