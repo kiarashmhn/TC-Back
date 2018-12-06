@@ -35,5 +35,6 @@ class Car(db.Model):
             'automate' : self.automate,
             'user_id' : self.user_id,
             'price' : self.price,
-            'id' : self.id
+            'id' : self.id,
+            'image_url' : self.image_url
         }
