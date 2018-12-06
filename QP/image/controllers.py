@@ -1,11 +1,11 @@
 import os
-from flask import Flask, request, redirect, url_for, Blueprint, session
+from flask import Flask, request, redirect, url_for, Blueprint, session, send_from_directory
 from flask.json import jsonify
 from flask_login import login_required
 from werkzeug.utils import secure_filename
 from QP import app, ResponseObject, Car, db
 
-UPLOAD_FOLDER = 'tmp/'
+UPLOAD_FOLDER = '/Users/kiarash/Desktop/TC-Back/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 img = Blueprint('img', __name__)
@@ -52,3 +52,10 @@ class ImageHandler:
         else:
             response = ResponseObject.ResponseObject(obj=None, status='File type not allowed!')
             return jsonify(response.serialize())
+
+    @staticmethod
+    @img.route('/<path:filename>', methods=["GET"])
+    def download_image(filename):
+        filename = 'img/' + filename
+        return send_from_directory(app.static_folder,
+                                   filename)
