@@ -45,7 +45,7 @@ class ImageHandler:
                 return jsonify(response.serialize())
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            car.image_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            car.image_url = filename
             db.session.commit()
             response = ResponseObject.ResponseObject(obj=None, status='OK')
             return jsonify(response.serialize())
