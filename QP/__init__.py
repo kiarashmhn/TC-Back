@@ -25,12 +25,15 @@ from QP.user.models import User
 from QP.car.controllers import car
 from QP.car.models import Car
 from QP.sort.controllers import srt
+from QP.image.controllers import img
 
 base_url = '/api/v1'
 
 app.register_blueprint(usr, url_prefix=base_url + '/users')
 app.register_blueprint(car, url_prefix=base_url+'/cars')
 app.register_blueprint(srt, url_prefix=base_url+'/sort')
+app.register_blueprint(img, url_prefix=base_url+'/images')
+
 
 @login_manager.user_loader
 def load_user(user_id):

@@ -43,7 +43,7 @@ def run():
 
 @app.before_request
 def before_request():
-    if not request.is_json and request.method == 'POST':
+    if not request.is_json and request.method == 'POST' and 'images' not in str(request.url_rule):
         return abort(400, "Bad request")
 
 
