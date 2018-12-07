@@ -24,6 +24,48 @@ class ImageHandler:
     @login_required
     @img.route('/<int:car_id>', methods=['POST'])
     def upload_image(car_id):
+        """
+            This is the UploadCarImage API
+            Call this api passing a car_id and a file to add the file as image of the car.
+            ---
+            tags:
+                - UploadCarImage API
+            parameters:
+                - name: car_id
+                  in: path
+                  type: integer
+                  required: true
+                  description: id of the car you want to add image for.
+                - name: file
+                  in: form
+                  type: multipartFile
+                  required: true
+                  description: the image you want to add for the car.
+            responses:
+                200:
+                    description: All responses have 200 status code; check the status field.
+                    schema:
+                        type: object
+                        properties:
+                            object:
+                                type: object
+                            status:
+                                type: string
+                200,status="OK":
+                    description: Image successfully uploaded.
+                200,status="Invalid car id!":
+                    description: Car not found.
+                200,status="No file part!":
+                    description: No file parameter in the request.
+                200,status="File type not allowed!":
+                    description: file type is invalid.
+                200,status="No file part!":
+                    description: No file parameter in the request.
+                200,status="You are not allowed to upload image for this car!":
+                    description: this car isn't yours.
+                401:
+                    description: You aren't logged in
+        """
         # check if the post request has the file part
         if 'file' not in request.files:
             response = ResponseObject.ResponseObject(obj=None, status='No file part!')
@@ -56,6 +98,28 @@ class ImageHandler:
     @staticmethod
     @img.route('/<path:filename>', methods=["GET"])
     def download_image(filename):
+        """
+            This is the DownloadCarImage API
+            Call this api passing a filename to download the image.
+            ---
+            tags:
+                - DownloadCarImage API
+            parameters:
+                - name: filename
+                  in: path
+                  type: string
+                  required: true
+                  description: filename of the image.
+            responses:
+                200:
+                    description: OK
+                    schema:
+                        type: file
+                401:
+                    description: You aren't logged in
+                404:
+                    description: file not found
+                """
         filename = 'img/' + filename
         return send_from_directory(app.static_folder,
                                    filename)
