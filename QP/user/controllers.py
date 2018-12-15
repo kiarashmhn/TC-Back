@@ -2,10 +2,8 @@ import os
 from datetime import datetime
 from flask import Flask, request, jsonify, redirect, render_template, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import login_required, login_user, logout_user, current_user
-from QP import db, app
+from QP import db, app, auth_manager
 from QP.user.models import User
-from flask_login import login_required, login_user, logout_user, current_user
 from QP import ResponseObject
 from flask import Blueprint
 
@@ -279,15 +277,12 @@ class UserController():
             error = 'invalid credentials!'
             response = ResponseObject.ResponseObject(obj=User(), status=error)
             return jsonify(response.serialize())
-        login_user(u)
-        session['user_id'] = u.id
-        session['role'] = u.role
-        response = ResponseObject.ResponseObject(obj=u, status='OK')
-        return jsonify(response.serialize())
+        token = auth_manager.generate_token(u.id)
+        return jsonify(obj=token, status='OK'), 200
 
     @staticmethod
-    @login_required
     @usr.route('/logout', methods=["GET"])
+    @auth_manager.authenticate
     def logout():
         """
         This is the LogOut API
@@ -313,15 +308,13 @@ class UserController():
           401:
             description: You aren't logged in
         """
-        logout_user()
-        session.pop('user_id', None)
-        session.pop('role', None)
+        auth_manager.expire_token()
         response = ResponseObject.ResponseObject(obj=User(), status='OK')
         return jsonify(response.serialize())
 
     @staticmethod
-    @login_required
     @usr.route('', methods=["GET"])
+    @auth_manager.authenticate
     def list_users():
         """
         This is the ListUsers API
@@ -405,8 +398,8 @@ class UserController():
         return jsonify(response.serialize())
 
     @staticmethod
-    @login_required
     @usr.route('/<int:user_id>', methods=["DELETE"])
+    @auth_manager.authenticate
     def delete_user(user_id):
         """
         This is the DeleteUser API
