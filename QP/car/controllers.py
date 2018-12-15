@@ -358,7 +358,6 @@ class CarHandler():
 
     @staticmethod
     @car.route('/<int:car_id>', methods=["GET"])
-    @login_required
     def get_car(car_id):
         """
         This is the GetCar API
