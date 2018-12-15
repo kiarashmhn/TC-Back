@@ -14,14 +14,13 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'th
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
-login_manager = LoginManager()
-login_manager.session_protection = 'strong'
-login_manager.init_app(app)
 cors = CORS(resources={r"/api/*": {"origins": "*"}})
 cors.init_app(app)
 
-from QP.user.controllers import usr
 from QP.user.models import User
+from QP.auth.auth_manager import Auth
+auth_manager = Auth(app)
+from QP.user.controllers import usr
 from QP.car.controllers import car
 from QP.car.models import Car
 from QP.sort.controllers import srt
@@ -33,8 +32,3 @@ app.register_blueprint(usr, url_prefix=base_url + '/users')
 app.register_blueprint(car, url_prefix=base_url+'/cars')
 app.register_blueprint(srt, url_prefix=base_url+'/sort')
 app.register_blueprint(img, url_prefix=base_url+'/images')
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(user_id)
