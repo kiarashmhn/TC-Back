@@ -283,7 +283,7 @@ class UserController():
     @staticmethod
     @usr.route('/logout', methods=["GET"])
     @auth_manager.authenticate
-    def logout():
+    def logout(user):
         """
         This is the LogOut API
         Call this api to logout.
@@ -315,7 +315,7 @@ class UserController():
     @staticmethod
     @usr.route('', methods=["GET"])
     @auth_manager.authenticate
-    def list_users():
+    def list_users(user):
         """
         This is the ListUsers API
         Call this api to get the list of users.
@@ -384,10 +384,7 @@ class UserController():
             401:
                 description: You haven't logged in!
         """
-        if 'role' not in session:
-            response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
-            return jsonify(response.serialize())
-        if session['role'] == "super_admin" or session['role'] == "admin":
+        if user.role == "super_admin" or user.role == "admin":
             users = User.query.all()
             if users is None:
                 response = ResponseObject.ResponseObject(obj=[User()], status='there are no users in the database!')
@@ -400,7 +397,7 @@ class UserController():
     @staticmethod
     @usr.route('/<int:user_id>', methods=["DELETE"])
     @auth_manager.authenticate
-    def delete_user(user_id):
+    def delete_user(user, user_id):
         """
         This is the DeleteUser API
         Call this api passing a user_id in the path to delete it.
@@ -429,21 +426,18 @@ class UserController():
             401:
                 description: You aren't logged in
         """
-        if 'role' not in session:
-            response = ResponseObject.ResponseObject(obj=User(), status='this url is not accessible for you!')
-            return jsonify(response.serialize())
-        if session['role'] == "admin" or session['role'] == "super_admin":
+        if user.role == "admin" or user.role == "super_admin":
             if user_id is None:
                 response = ResponseObject.ResponseObject(obj=User(), status='user_id cannot be empty!')
                 return jsonify(response.serialize())
-            user = User.query.filter_by(id=user_id).first()
-            if user is None:
+            user2 = User.query.filter_by(id=user_id).first()
+            if user2 is None:
                 response = ResponseObject.ResponseObject(obj=User(), status='invalid user_id!')
                 return jsonify(response.serialize())
-            if user.role == "user" or session['role'] == "super_admin":
-                for car in user.cars:
+            if user2.role == "user" or user.role == "super_admin":
+                for car in user2.cars:
                     db.session.delete(car)
-                db.session.delete(user)
+                db.session.delete(user2)
                 db.session.commit()
                 response = ResponseObject.ResponseObject(obj=User(), status='OK')
                 return jsonify(response.serialize())
