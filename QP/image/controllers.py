@@ -3,7 +3,7 @@ from flask import Flask, request, redirect, url_for, Blueprint, session, send_fr
 from flask.json import jsonify
 from flask_login import login_required
 from werkzeug.utils import secure_filename
-from QP import app, ResponseObject, Car, db
+from QP import app, ResponseObject, Car, db, auth_manager
 
 UPLOAD_FOLDER = '/Users/kiarash/Desktop/TC-Back/img'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -21,9 +21,9 @@ class ImageHandler:
                filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
 
     @staticmethod
-    @login_required
     @img.route('/<int:car_id>', methods=['POST'])
-    def upload_image(car_id):
+    @auth_manager.authenticate
+    def upload_image(user, car_id):
         """
             This is the UploadCarImage API
             Call this api passing a car_id and a file to add the file as image of the car.
@@ -81,7 +81,7 @@ class ImageHandler:
             if car is None:
                 response = ResponseObject.ResponseObject(obj=None, status='Invalid car id!')
                 return jsonify(response.serialize())
-            if session['user_id'] != car.user_id:
+            if user.id != car.user_id:
                 response = ResponseObject.ResponseObject(obj=None, status='You are not allowed to /'
                                                                           'upload image for this car!')
                 return jsonify(response.serialize())
