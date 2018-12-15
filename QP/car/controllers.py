@@ -421,7 +421,8 @@ class CarHandler():
 
     @staticmethod
     @car.route('/user', methods=["GET"])
-    def get_user_cars():
+    @auth_manager.authenticate
+    def get_user_cars(user):
         """
                 This is the GetUser'sCars API
                 Call this api to get the list of your cars.
@@ -468,12 +469,5 @@ class CarHandler():
                     401:
                         description: You are not logged in!
         """
-        if 'role' not in session or 'user_id' not in session:
-            response = ResponseObject.ResponseObject(obj=[Car()], status='this url is not accessible for you!')
-            return jsonify(response.serialize())
-        u = User.query.filter_by(id=session['user_id']).first()
-        if u is None:
-            response = ResponseObject.ResponseObject(obj=[Car()], status='invalid user_id!')
-            return jsonify(response.serialize())
-        response = ResponseObject.ResponseObject(obj=u.cars, status='OK')
+        response = ResponseObject.ResponseObject(obj=user.cars, status='OK')
         return jsonify(response.serialize())
