@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify, redirect, render_template, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, current_user
-from QP import db, app
+from QP import db, app, auth_manager
 from QP.user.models import User
 from QP.car.models import Car
 from flask_login import login_required, login_user, logout_user, current_user
@@ -19,8 +19,8 @@ class CarHandler():
 
     @staticmethod
     @car.route('', methods=["POST"])
-    @login_required
-    def add_car():
+    @auth_manager.authenticate
+    def add_car(user):
         """
         This is the AddCar API
         Call this api passing a car in request body to add it.
@@ -101,10 +101,7 @@ class CarHandler():
               description: You aren't logged in
         """
         req = request.get_json()
-        if req is None:
-            response = ResponseObject.ResponseObject(obj=Car(), status='request body can not be empty!')
-            return jsonify(response.serialize())
-        if session['role'] == "admin" or session['role'] == "super_admin":
+        if user.role == "admin" or user.role == "super_admin":
             if req.get("user_id") is None:
                 error = 'user_id field cannot be empty!'
                 response = ResponseObject.ResponseObject(obj=Car(), status=error)
@@ -128,34 +125,26 @@ class CarHandler():
                 print("car added")
                 response = ResponseObject.ResponseObject(obj=carr, status='OK')
                 return jsonify(response.serialize())
-        elif session['role'] == "user":
-            if User.query.filter_by(id=session['user_id']).first() is None:
-                error = 'invalid user_id in session!'
-                response = ResponseObject.ResponseObject(obj=Car(), status=error)
-                return jsonify(response.serialize())
-            else:
-                carr = Car(name=req.get("name"),
-                           factory=req.get("factory"),
-                           kilometer=req.get("kilometer"),
-                           year=req.get("year"),
-                           color=req.get("color"),
-                           description=req.get("description"),
-                           automate=req.get("automate"),
-                           price=req.get("price"),
-                           user_id=session['user_id'])
-                db.session.add(carr)
-                db.session.commit()
-                print("car added")
-                response = ResponseObject.ResponseObject(obj=carr, status='OK')
-                return jsonify(response.serialize())
         else:
-            response = ResponseObject.ResponseObject(obj=Car(), status='this url is not accessible for you!')
+            carr = Car(name=req.get("name"),
+                       factory=req.get("factory"),
+                       kilometer=req.get("kilometer"),
+                       year=req.get("year"),
+                       color=req.get("color"),
+                       description=req.get("description"),
+                       automate=req.get("automate"),
+                       price=req.get("price"),
+                       user_id=user.id)
+            db.session.add(carr)
+            db.session.commit()
+            print("car added")
+            response = ResponseObject.ResponseObject(obj=carr, status='OK')
             return jsonify(response.serialize())
 
     @staticmethod
     @car.route('/<int:car_id>', methods=["DELETE"])
-    @login_required
-    def delete_car(car_id):
+    @auth_manager.authenticate
+    def delete_car(user, car_id):
         """
         This is the DeleteCar API
         Call this api passing a car_id in the path to delete it.
@@ -219,7 +208,7 @@ class CarHandler():
         if carr is None:
             response = ResponseObject.ResponseObject(obj=Car(), status='invalid car_id!')
             return jsonify(response.serialize())
-        if session['role'] == "user" and carr not in current_user.cars:
+        if user.role == "user" and carr not in user.cars:
             response = ResponseObject.ResponseObject(obj=Car(), status='you can not delete this car!')
             return jsonify(response.serialize())
         db.session.delete(carr)
