@@ -42,7 +42,10 @@ class Auth(object):
             print(user_id)
             if not user_id:
                 return abort(401, "Token is invalid or has expired")
+            user = User.query.filter_by(id=user_id).first()
+            if not user:
+                return abort(401, "Token is invalid or has expired")
             g.user_id = user_id
-            return f(*args, **kwargs)
+            return f(user, *args, **kwargs)
 
         return decorated
