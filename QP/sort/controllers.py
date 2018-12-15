@@ -21,7 +21,6 @@ class SortHandler():
 
     @staticmethod
     @srt.route('/cars/<field>/<int:ascending>', methods=["GET"])
-    @login_required
     def sort_car(field, ascending):
         """
         This is the SortCars API
