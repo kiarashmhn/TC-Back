@@ -38,20 +38,20 @@ class UserController():
                     - identificationId
                   properties:
                     username:
-                        default: ali
+                        example: ali
                         type: string
                     password:
                         type: string
-                        default: 123456789
+                        example: 123456789
                     email:
                         type: string
-                        default: ali@gmail.com
+                        example: ali@gmail.com
                     identificationId:
                         type: string
-                        default: 0020738528
+                        example: 0020738528
             responses:
               200:
-                    description: All responses have 200 status code; check the status field.
+                    description: User successfully created!
                     schema:
                         type: object
                         properties:
@@ -59,66 +59,61 @@ class UserController():
                                 type: object
                                 properties:
                                     username:
-                                        default: ali
+                                        example: ali
                                         type: string
                                     password:
                                         type: string
-                                        default: 123456789
+                                        example: 123456789
                                     email:
                                         type: string
-                                        default: ali@gmail.com
+                                        example: ali@gmail.com
                                     identificationId:
                                         type: string
-                                        default: 0020738528
+                                        example: 0020738528
                                     address:
                                         type: string
-                                        default: tehran
+                                        example: tehran
                                     age:
                                         type: integer
-                                        default: 27
+                                        example: 27
                                     gender:
                                         type: string
-                                        default: male
+                                        example: male
                                     id:
                                         type: integer
-                                        default: 2
+                                        example: 2
                                     lastName:
                                         type: string
-                                        default: erf
+                                        example: erf
                                     mobile_num:
                                         type: string
-                                        default: 09102998841
+                                        example: 09102998841
                                     phone_num:
                                         type: string
-                                        default: 02188461197
+                                        example: 02188461197
                                     name:
                                         type: string
-                                        default: ali
+                                        example: ali
                                     postalCode:
                                         type: integer
-                                        default: 1565935871
+                                        example: 1565935871
                                     role:
                                         type: string
-                                        default: user
-                            status:
-                                type: string
-                                default: OK
+                                        example: user
 
-              200,status="OK":
-                    description: User successfully created; And is returned in response.
-              200,status="username field cannot be empty!":
+              400,status="username field cannot be empty!":
                     description: User wasn't created because of the message in status.
-              200,status="user with this username already exists!":
+              400,status="user with this username already exists!":
                     description: User wasn't created because of the message in status.
-              200,status="identificationId field cannot be empty!":
+              400,status="identificationId field cannot be empty!":
                     description: User wasn't created because of the message in status.
-              200,status="user with this id already exists!":
+              400,status="user with this id already exists!":
                     description: User wasn't created because of the message in status.
-              200,status="email field cannot be empty!":
+              400,status="email field cannot be empty!":
                     description: User wasn't created because of the message in status.
-              200,status="user with this email already exists!":
+              400,status="user with this email already exists!":
                     description: User wasn't created because of the message in status.
-              200,status="password field cannot be empty!":
+              400,status="password field cannot be empty!":
                     description: User wasn't created because of the message in status.
         """
         error = None
@@ -166,11 +161,11 @@ class UserController():
             db.session.add(user)
             db.session.commit()
             print("signed in")
-            response = ResponseObject.ResponseObject(obj=user, status='OK')
-            return jsonify(response.serialize())
+            out = {'object': user}
+            return jsonify(out), 200
         else:
-            response = ResponseObject.ResponseObject(obj=User(), status=error)
-            return jsonify(response.serialize())
+            out = {'status': error}
+            return jsonify(out), 400
 
     @staticmethod
     @usr.route('/login', methods=["POST"])
@@ -194,14 +189,14 @@ class UserController():
                 - password
               properties:
                 username:
-                  default: ali
+                  example: ali
                   type: string
                 password:
                   type: string
-                  default: 123456789
+                  example: 123456789
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: OK
             schema:
                 type: object
                 properties:
@@ -209,56 +204,53 @@ class UserController():
                         type: object
                         properties:
                             username:
-                                default: ali
+                                example: ali
                                 type: string
                             password:
                                 type: string
-                                default: 123456789
+                                example: 123456789
                             email:
                                 type: string
-                                default: ali@gmail.com
+                                example: ali@gmail.com
                             identificationId:
                                 type: string
-                                default: 0020738528
+                                example: 0020738528
                             address:
                                 type: string
-                                default: tehran
+                                example: tehran
                             age:
                                 type: integer
-                                default: 27
+                                example: 27
                             gender:
                                 type: string
-                                default: male
+                                example: male
                             id:
                                 type: integer
-                                default: 2
+                                example: 2
                             lastName:
                                 type: string
-                                default: erf
+                                example: erf
                             mobile_num:
                                 type: string
-                                default: 09102998841
+                                example: 09102998841
                             phone_num:
                                 type: string
-                                default: 02188461197
+                                example: 02188461197
                             name:
                                 type: string
-                                default: ali
+                                example: ali
                             postalCode:
                                 type: integer
-                                default: 1565935871
+                                example: 1565935871
                             role:
                                 type: string
-                                default: user
-                    status:
+                                example: user
+                    token:
                         type: string
-                        default: OK
-          200,status="OK":
-            description: User successfully logged in; And is returned in response.
-
-          200,status="username and password fields cannot be empty!":
+                        example: ea0632d8-d254-4773-93df-e9f19e589ce
+          400,status="username and password fields cannot be empty!":
             description: User wasn't logged in because of the message in status.
-          200,status="invalid credentials!":
+          400,status="invalid credentials!":
             description: User wasn't logged in because of the message in status.
                 """
         req = request.get_json()
@@ -270,15 +262,16 @@ class UserController():
         error = None
         if username is None or password is None:
             error = 'username and password fields cannot be empty!'
-            response = ResponseObject.ResponseObject(obj=User(), status=error)
-            return jsonify(response.serialize())
+            out = {'status': error}
+            return jsonify(out), 400
         u = User.get_by_username(username=username)
         if u is None or not u.check_password(password):
             error = 'invalid credentials!'
-            response = ResponseObject.ResponseObject(obj=User(), status=error)
-            return jsonify(response.serialize())
+            out = {'status': error}
+            return jsonify(out), 400
         token = auth_manager.generate_token(u.id)
-        return jsonify(obj=token, status='OK'), 200
+        out = {'object': u.serialize(), 'token': token}
+        return jsonify(out), 200
 
     @staticmethod
     @usr.route('/logout', methods=["GET"])
@@ -294,23 +287,19 @@ class UserController():
           - application/json
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: User successfully logged out.
             schema:
             type: object
             properties:
-                object:
-                    type: none
                 status:
                     type: string
-                    default: OK
-          200,status="OK":
-            description: User successfully created; And is returned in response.
+                    example: OK
           401:
             description: You aren't logged in
         """
         auth_manager.expire_token()
-        response = ResponseObject.ResponseObject(obj=User(), status='OK')
-        return jsonify(response.serialize())
+        out = {'status': 'OK'}
+        return jsonify(out), 200
 
     @staticmethod
     @usr.route('', methods=["GET"])
@@ -324,7 +313,7 @@ class UserController():
             - ListUsers API
         responses:
             200:
-              description: All responses have 200 status code; check the status field.
+              description: OK
               schema:
               type: object
               properties:
@@ -334,52 +323,48 @@ class UserController():
                         type: object
                         properties:
                             username:
-                                default: ali
+                                example: ali
                                 type: string
                             email:
                                 type: string
-                                default: ali@gmail.com
+                                example: ali@gmail.com
                             identificationId:
                                 type: string
-                                default: 0020738528
+                                example: 0020738528
                             address:
                                 type: string
-                                default: tehran
+                                example: tehran
                             age:
                                 type: integer
-                                default: 27
+                                example: 27
                             gender:
                                 type: string
-                                default: male
+                                example: male
                             id:
                                 type: integer
-                                default: 2
+                                example: 2
                             lastName:
                                 type: string
-                                default: erf
+                                example: erf
                             mobile_num:
                                 type: string
-                                default: 09102998841
+                                example: 09102998841
                             phone_num:
                                 type: string
-                                default: 02188461197
+                                example: 02188461197
                             name:
                                 type: string
-                                default: ali
+                                example: ali
                             postalCode:
                                 type: integer
-                                default: 1565935871
+                                example: 1565935871
                             role:
                                 type: string
-                                default: user
-                status:
-                    type: string
+                                example: user
 
-            200,status="OK":
-                description: Successfully returned the list of users.
-            200,status="there are no users in the database!":
+            400,status="there are no users in the database!":
                 description: No cars!
-            200,status="this url is not accessible for you!":
+            400,status="this url is not accessible for you!":
                 description: You are not an admin!
             401:
                 description: You haven't logged in!
@@ -387,12 +372,15 @@ class UserController():
         if user.role == "super_admin" or user.role == "admin":
             users = User.query.all()
             if users is None:
-                response = ResponseObject.ResponseObject(obj=[User()], status='there are no users in the database!')
-                return jsonify(response.serialize())
-            response = ResponseObject.ResponseObject(obj=users, status='OK')
-            return jsonify(response.serialize())
-        response = ResponseObject.ResponseObject(obj=[User()], status='this url is not accessible for you!')
-        return jsonify(response.serialize())
+                out = {'status': 'there are no users in the database!'}
+                return jsonify(out), 400
+            u = []
+            for user in users:
+                u.append(user.serialize())
+            out = {'object': u}
+            return jsonify(out), 200
+        out = {'status': 'this url is not accessible for you!'}
+        return jsonify(out), 400
 
     @staticmethod
     @usr.route('/<int:user_id>', methods=["DELETE"])
@@ -412,38 +400,36 @@ class UserController():
               description: id of the user you want to delete
         responses:
             200:
-                description: All responses have 200 status code; check the status field.
-            200,status="OK":
-                description: User successfully deleted.
-            200,status="user_id cannot be empty!":
+                description: Ok.
+            400,status="user_id cannot be empty!":
                 description: User wasn't deleted because of the message in status.
-            200,status="invalid user_id!":
+            400,status="invalid user_id!":
                 description: User wasn't deleted because of the message in status.
-            200,status="this url is not accessible for you!":
+            400,status="this url is not accessible for you!":
                 description: User wasn't deleted because you are not an admin.
-            200,status="you can not delete this user!":
+            400,status="you can not delete this user!":
                 description: The user you're trying to remove is an admin!
             401:
                 description: You aren't logged in
         """
         if user.role == "admin" or user.role == "super_admin":
             if user_id is None:
-                response = ResponseObject.ResponseObject(obj=User(), status='user_id cannot be empty!')
-                return jsonify(response.serialize())
+                out = {'status': 'user_id cannot be empty!'}
+                return jsonify(out), 400
             user2 = User.query.filter_by(id=user_id).first()
             if user2 is None:
-                response = ResponseObject.ResponseObject(obj=User(), status='invalid user_id!')
-                return jsonify(response.serialize())
+                out = {'status': 'invalid user_id!'}
+                return jsonify(out), 400
             if user2.role == "user" or user.role == "super_admin":
                 for car in user2.cars:
                     db.session.delete(car)
                 db.session.delete(user2)
                 db.session.commit()
-                response = ResponseObject.ResponseObject(obj=User(), status='OK')
-                return jsonify(response.serialize())
+                out = {'status': 'OK'}, 200
+                return jsonify(out)
             else:
-                response = ResponseObject.ResponseObject(obj=User(), status='you can not delete this user!')
-                return jsonify(response.serialize())
+                out = {'status': 'you can not delete this user!'}
+                return jsonify(out), 400
         else:
-            response = ResponseObject.ResponseObject(obj=User(), status='this url is not accessible for you!')
-            return jsonify(response.serialize())
+            out = {'status': 'this url is not accessible for you!'}
+            return jsonify(out), 400
