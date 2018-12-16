@@ -41,7 +41,7 @@ class SortHandler():
             description: ascending or descending.
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: Ok.
             schema:
                 type: object
                 properties:
@@ -51,36 +51,40 @@ class SortHandler():
                       type: object
                       properties:
                         name:
-                            default: ali
+                            example: i8
                             type: string
                         factory:
                             type: string
-                            default: bmw
+                            example: bmw
                         kilometer:
                             type: integer
+                            example: 1000
                         year:
                             type: integer
+                            example: 2018
                         color:
                             type: string
+                            example: white
                         description:
                             type: string
+                            example: bmw-i8
                         automate:
                             type: integer
+                            example: 1
                         price:
                             type: integer
+                            example: 1500000
                         user_id:
                             type: integer
+                            example: 1
                         id:
                             type: integer
-                  status:
-                    type: string
-          200,status="OK":
-            description: Cars successfully sorted; and returned in response.
-          200,status="wrong input!":
+                            example: 3
+          400,status="wrong input!":
             description: invalid ascending field!
-          200,status="wrong field!":
+          400,status="wrong field!":
             description: invalid field of car!
-          200,status="no cars in the database!":
+          400,status="no cars in the database!":
             description: empty database!
           401:
             description: You aren't logged in.
@@ -91,21 +95,24 @@ class SortHandler():
             elif ascending == 0:
                 cars = Car.query.filter(Car.year.isnot(None)).order_by(desc(Car.year)).all()
             else:
-                response = ResponseObject.ResponseObject(obj=[Car()], status='wrong input!')
-                return jsonify(response.serialize())
+                out = {'status': 'wrong input!'}
+                return jsonify(out), 400
         elif field == 'price':
             if ascending == 1:
                 cars = Car.query.filter(Car.price.isnot(None)).order_by(Car.price).all()
             elif ascending == 0:
                 cars = Car.query.filter(Car.price.isnot(None)).order_by(desc(Car.price)).all()
             else:
-                response = ResponseObject.ResponseObject(obj=[Car()], status='wrong input!')
-                return jsonify(response.serialize())
+                out = {'status': 'wrong input!'}
+                return jsonify(out), 400
         else:
-            response = ResponseObject.ResponseObject(obj=[Car()], status='wrong field!')
-            return jsonify(response.serialize())
+            out = {'status': 'wrong field!'}
+            return jsonify(out), 400
         if cars is None:
-            response = ResponseObject.ResponseObject(obj=[Car()], status='no cars in the database!')
-            return jsonify(response.serialize())
-        response = ResponseObject.ResponseObject(obj=cars, status='OK')
-        return jsonify(response.serialize())
+            out = {'status': 'no cars in the database!'}
+            return jsonify(out), 400
+        c = []
+        for car in cars:
+            c.append(car.serialize())
+        out = {'object': c}
+        return jsonify(out), 200
