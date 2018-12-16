@@ -39,28 +39,35 @@ class CarHandler():
                 - user_id
               properties:
                 name:
-                    default: ali
+                    example: i8
                     type: string
                 factory:
                     type: string
-                    default: bmw
+                    example: bmw
                 kilometer:
                     type: integer
+                    example: 1000
                 year:
                     type: integer
+                    example: 2018
                 color:
                     type: string
+                    example: white
                 description:
                     type: string
+                    example: bmw-i8
                 automate:
                     type: integer
+                    example: 1
                 price:
                     type: integer
+                    example: 2000000
                 user_id:
                     type: integer
+                    example: 1
         responses:
             200:
-              description: All responses have 200 status code; check the status field.
+              description: OK.
               schema:
                 type: object
                 properties:
@@ -68,34 +75,38 @@ class CarHandler():
                     type: object
                     properties:
                         name:
-                            default: ali
+                            example: i8
                             type: string
                         factory:
                             type: string
-                            default: bmw
+                            example: bmw
                         kilometer:
                             type: integer
+                            example: 1000
                         year:
                             type: integer
+                            example: 2018
                         color:
                             type: string
+                            example: white
                         description:
                             type: string
+                            example: bmw-i8
                         automate:
                             type: integer
+                            example: 1
                         price:
                             type: integer
+                            example: 2000000
                         user_id:
                             type: integer
+                            example: 1
                         id:
                             type: integer
-                  status:
-                    type: string
-            200,status="OK":
-              description: Car successfully added; And is returned in response.
-            200,status="user_id field cannot be empty!":
+                            example: 1
+            400,status="user_id field cannot be empty!":
               description: Car wasn't added because of the message in status.
-            200,status="invalid user_id!":
+            400,status="invalid user_id!":
               description: Car wasn't added because of the message in status.
             401:
               description: You aren't logged in
@@ -103,13 +114,11 @@ class CarHandler():
         req = request.get_json()
         if user.role == "admin" or user.role == "super_admin":
             if req.get("user_id") is None:
-                error = 'user_id field cannot be empty!'
-                response = ResponseObject.ResponseObject(obj=Car(), status=error)
-                return jsonify(response.serialize())
+                out = {'status': 'user_id field cannot be empty!'}
+                return jsonify(out), 400
             elif User.query.filter_by(id=req.get("user_id")).first() is None:
-                error = 'invalid user_id!'
-                response = ResponseObject.ResponseObject(obj=Car(), status=error)
-                return jsonify(response.serialize())
+                out = {'status': 'invalid user_id!'}
+                return jsonify(out), 400
             else:
                 carr = Car(name=req.get("name"),
                            factory=req.get("factory"),
@@ -123,8 +132,8 @@ class CarHandler():
                 db.session.add(carr)
                 db.session.commit()
                 print("car added")
-                response = ResponseObject.ResponseObject(obj=carr, status='OK')
-                return jsonify(response.serialize())
+                out = {'object': carr.serialize()}
+                return jsonify(out), 200
         else:
             carr = Car(name=req.get("name"),
                        factory=req.get("factory"),
@@ -138,8 +147,8 @@ class CarHandler():
             db.session.add(carr)
             db.session.commit()
             print("car added")
-            response = ResponseObject.ResponseObject(obj=carr, status='OK')
-            return jsonify(response.serialize())
+            out = {'object': carr.serialize()}
+            return jsonify(out), 200
 
     @staticmethod
     @car.route('/<int:car_id>', methods=["DELETE"])
@@ -159,62 +168,36 @@ class CarHandler():
             description: id of the car you want to delete
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: OK.
             schema:
                 type: object
                 properties:
-                  object:
-                    type: object
-                    properties:
-                        name:
-                            default: ali
-                            type: string
-                        factory:
-                            type: string
-                            default: bmw
-                        kilometer:
-                            type: integer
-                        year:
-                            type: integer
-                        color:
-                            type: string
-                        description:
-                            type: string
-                        automate:
-                            type: integer
-                        price:
-                            type: integer
-                        user_id:
-                            type: integer
-                        id:
-                            type: integer
                   status:
                     type: string
-          200,status="OK":
-            description: Car successfully deleted.
-          200,status="car_id cannot be empty!":
+                    example: OK
+          400,status="car_id cannot be empty!":
             description: Car_id cannot be empty.
-          200,status="invalid car_id!":
+          400,status="invalid car_id!":
             description: Car wasn't found.
-          200,status="you can not delete this car!":
+          400,status="you can not delete this car!":
             description: You can not delete this car because this car isn't yours.
           401:
             description: You aren't logged in
         """
         if car_id is None:
-            response = ResponseObject.ResponseObject(obj=Car(), status='car_id cannot be empty!')
-            return jsonify(response.serialize())
+            out = {'status': 'car_id cannot be empty!'}
+            return jsonify(out), 400
         carr = Car.query.filter_by(id=car_id).first()
         if carr is None:
-            response = ResponseObject.ResponseObject(obj=Car(), status='invalid car_id!')
-            return jsonify(response.serialize())
+            out = {'status': 'invalid car_id!'}
+            return jsonify(out), 400
         if user.role == "user" and carr not in user.cars:
-            response = ResponseObject.ResponseObject(obj=Car(), status='you can not delete this car!')
-            return jsonify(response.serialize())
+            out = {'status': 'you can not delete this car!'}
+            return jsonify(out), 400
         db.session.delete(carr)
         db.session.commit()
-        response = ResponseObject.ResponseObject(obj=Car(), status='OK')
-        return jsonify(response.serialize())
+        out = {'status': 'OK'}
+        return jsonify(out), 200
 
     @staticmethod
     @car.route('', methods=["GET"])
@@ -227,7 +210,7 @@ class CarHandler():
           - ListCar API
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: OK.
             schema:
                 type: object
                 properties:
@@ -237,45 +220,52 @@ class CarHandler():
                       type: object
                       properties:
                         name:
-                            default: ali
+                            example: i8
                             type: string
                         factory:
                             type: string
-                            default: bmw
+                            example: bmw
                         kilometer:
                             type: integer
+                            example: 1000
                         year:
                             type: integer
+                            example: 2018
                         color:
                             type: string
+                            example: white
                         description:
                             type: string
+                            example: bmw-i8
                         automate:
                             type: integer
+                            example: 1
                         price:
                             type: integer
+                            example: 2000000
                         user_id:
                             type: integer
+                            example: 1
                         id:
                             type: integer
-                  status:
-                    type: string
-          200,status="OK":
-            description: Successfully returned the list of cars.
-          200,status="there are no cars in the database!":
+                            example: 1
+          400,status="there are no cars in the database!":
             description: No cars!
         """
         cars = Car.query.all()
         if cars is None:
-            response = ResponseObject.ResponseObject(obj=Car(), status='there are no cars in the database!')
-            return jsonify(response.serialize())
-        response = ResponseObject.ResponseObject(obj=cars, status='OK')
-        return jsonify(response.serialize())
+            out = {'status': 'there are no cars in the database!'}
+            return jsonify(out), 400
+        c = []
+        for car in cars:
+            c.append(car.serialize())
+        out = {'object': c}
+        return jsonify(out), 200
 
     @staticmethod
     @car.route('/<int:car_id>', methods=["PUT"])
-    @login_required
-    def update_car(car_id):
+    @auth_manager.authenticate
+    def update_car(user, car_id):
         """
         This is the UpdateCar API
         Call this api passing a car_id in the path to update it.
@@ -290,42 +280,16 @@ class CarHandler():
             description: id of the car you want to update
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: OK.
             schema:
                 type: object
                 properties:
-                  object:
-                    type: object
-                    properties:
-                        name:
-                            default: ali
-                            type: string
-                        factory:
-                            type: string
-                            default: bmw
-                        kilometer:
-                            type: integer
-                        year:
-                            type: integer
-                        color:
-                            type: string
-                        description:
-                            type: string
-                        automate:
-                            type: integer
-                        price:
-                            type: integer
-                        user_id:
-                            type: integer
-                        id:
-                            type: integer
                   status:
                     type: string
-          200,status="OK":
-            description: Car successfully updated.
-          200,status="Car not found!":
+                    example: OK
+          400,status="Car not found!":
             description: Car not found!
-          200,status="you can not update this car!":
+          400,status="you can not update this car!":
             description: You can't update this car because it is'nt yours.
           401:
             description: You aren't logged in
@@ -333,8 +297,8 @@ class CarHandler():
         req = request.get_json()
         carr = Car.query.filter_by(id=car_id).first()
         if carr is None:
-            response = ResponseObject.ResponseObject(obj=Car(), status='car not found!')
-            return jsonify(response.serialize())
+            out = {'status': 'car not found!'}
+            return jsonify(out), 400
         if req.get("factory") is not None:
             carr.factory = req.get("factory")
         if req.get("kilometer") is not None:
@@ -349,12 +313,12 @@ class CarHandler():
             carr.description = req.get("description")
         if req.get("price") is not None:
             carr.price = req.get("price")
-        if session['role'] == "user" and carr not in current_user.cars:
-            response = ResponseObject.ResponseObject(obj=Car(), status='you can not update this car!')
-            return jsonify(response.serialize())
+        if user.role == "user" and carr not in user.cars:
+            out = {'status': 'you can not update this car!'}
+            return jsonify(out), 400
         db.session.commit()
-        response = ResponseObject.ResponseObject(obj=Car(), status='OK')
-        return jsonify(response.serialize())
+        out = {'status': 'OK'}
+        return jsonify(out), 200
 
     @staticmethod
     @car.route('/<int:car_id>', methods=["GET"])
@@ -373,7 +337,7 @@ class CarHandler():
             description: id of the car you want to get
         responses:
           200:
-            description: All responses have 200 status code; check the status field.
+            description: OK.
             schema:
                 type: object
                 properties:
@@ -381,32 +345,36 @@ class CarHandler():
                     type: object
                     properties:
                         name:
-                            default: ali
+                            example: i8
                             type: string
                         factory:
                             type: string
-                            default: bmw
+                            example: bmw
                         kilometer:
                             type: integer
+                            example: 10000
                         year:
                             type: integer
+                            example: 2018
                         color:
                             type: string
+                            example: white
                         description:
                             type: string
+                            example: bmw-i8
                         automate:
                             type: integer
+                            example: 1
                         price:
                             type: integer
+                            example: 2000000
                         user_id:
                             type: integer
+                            example: 1
                         id:
                             type: integer
-                  status:
-                    type: string
-          200,status="OK":
-            description: Car successfully returned.
-          200,status="Car not found!":
+                            example: 1
+          400,status="Car not found!":
             description: Car wasn't returned because of the message in status.
           401:
             description: You aren't logged in
@@ -414,10 +382,10 @@ class CarHandler():
 
         carr = Car.query.filter_by(id=car_id).first()
         if carr is None:
-            response = ResponseObject.ResponseObject(obj=Car(), status='car not found!')
-            return jsonify(response.serialize())
-        response = ResponseObject.ResponseObject(obj=carr, status='OK')
-        return jsonify(response.serialize())
+            out = {'status': 'car not found!'}
+            return jsonify(out), 400
+        out = {'object': carr.serialize()}
+        return jsonify(out), 200
 
     @staticmethod
     @car.route('/user', methods=["GET"])
@@ -431,7 +399,7 @@ class CarHandler():
                   - GetUser'sCars API
                 responses:
                     200:
-                        description: All responses have 200 status code; check the status field.
+                        description: OK.
                         schema:
                             type: object
                             properties:
@@ -441,33 +409,42 @@ class CarHandler():
                                         type: object
                                         properties:
                                             name:
-                                                default: ali
+                                                example: i8
                                                 type: string
                                             factory:
                                                 type: string
-                                                default: bmw
+                                                example: bmw
                                             kilometer:
+                                                example: 1000
                                                 type: integer
                                             year:
+                                                example: 2018
                                                 type: integer
                                             color:
+                                                example: white
                                                 type: string
                                             description:
                                                 type: string
+                                                example: bmw-i8
                                             automate:
                                                 type: integer
+                                                example: 1
                                             price:
                                                 type: integer
+                                                example: 2000000
                                             user_id:
                                                 type: integer
+                                                example: 1
                                             id:
                                                 type: integer
-                                status:
-                                    type: string
-                    200,status="Invalid user_id!":
+                                                example: 1
+                    400,status="Invalid user_id!":
                         description: Invalid user_id!
                     401:
                         description: You are not logged in!
         """
-        response = ResponseObject.ResponseObject(obj=user.cars, status='OK')
-        return jsonify(response.serialize())
+        c = []
+        for car in user.cars:
+            c.append(car.serialize())
+        out = {'object': c}
+        return jsonify(out), 200
