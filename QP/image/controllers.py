@@ -43,57 +43,54 @@ class ImageHandler:
                   description: the image you want to add for the car.
             responses:
                 200:
-                    description: All responses have 200 status code; check the status field.
+                    description: Ok
                     schema:
                         type: object
                         properties:
-                            object:
-                                type: object
                             status:
                                 type: string
-                200,status="OK":
-                    description: Image successfully uploaded.
-                200,status="Invalid car id!":
+                                example: OK
+
+                400,status="Invalid car id!":
                     description: Car not found.
-                200,status="No file part!":
+                400,status="No file part!":
                     description: No file parameter in the request.
-                200,status="File type not allowed!":
+                400,status="File type not allowed!":
                     description: file type is invalid.
-                200,status="No file part!":
+                400,status="No file part!":
                     description: No file parameter in the request.
-                200,status="You are not allowed to upload image for this car!":
+                400,status="Not allowed!":
                     description: this car isn't yours.
                 401:
                     description: You aren't logged in
         """
         # check if the post request has the file part
         if 'file' not in request.files:
-            response = ResponseObject.ResponseObject(obj=None, status='No file part!')
-            return jsonify(response.serialize())
+            out = {'status': 'No file part!'}
+            return jsonify(out), 400
         file = request.files['file']
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
-            response = ResponseObject.ResponseObject(obj=None, status='No selected file!')
-            return jsonify(response.serialize())
+            out = {'status': 'No selected file!'}
+            return jsonify(out), 400
         if file and ImageHandler.allowed_file(file.filename):
             car = Car.query.filter_by(id=car_id).first()
             if car is None:
-                response = ResponseObject.ResponseObject(obj=None, status='Invalid car id!')
-                return jsonify(response.serialize())
+                out = {'status': 'Invalid car id!'}
+                return jsonify(out), 400
             if user.id != car.user_id:
-                response = ResponseObject.ResponseObject(obj=None, status='You are not allowed to /'
-                                                                          'upload image for this car!')
-                return jsonify(response.serialize())
+                out = {'status': 'Not allowed!'}
+                return jsonify(out), 400
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             car.image_url = filename
             db.session.commit()
-            response = ResponseObject.ResponseObject(obj=None, status='OK')
-            return jsonify(response.serialize())
+            out = {'status': 'OK'}
+            return jsonify(out), 200
         else:
-            response = ResponseObject.ResponseObject(obj=None, status='File type not allowed!')
-            return jsonify(response.serialize())
+            out = {'status': 'File type not allowed!'}
+            return jsonify(out), 400
 
     @staticmethod
     @img.route('/<path:filename>', methods=["GET"])
