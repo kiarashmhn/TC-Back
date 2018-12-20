@@ -128,7 +128,8 @@ class CarHandler():
                            description=req.get("description"),
                            automate=req.get("automate"),
                            price=req.get("price"),
-                           user_id=req.get("user_id"))
+                           user_id=req.get("user_id"),
+                           is_rented=False)
                 db.session.add(carr)
                 db.session.commit()
                 print("car added")
@@ -143,7 +144,8 @@ class CarHandler():
                        description=req.get("description"),
                        automate=req.get("automate"),
                        price=req.get("price"),
-                       user_id=user.id)
+                       user_id=user.id,
+                       is_rented=False)
             db.session.add(carr)
             db.session.commit()
             print("car added")
@@ -180,7 +182,7 @@ class CarHandler():
           400,status="invalid car_id!":
             description: Car wasn't found.
           400,status="you can not delete this car!":
-            description: You can not delete this car because this car isn't yours.
+            description: You can not delete this car because this car isn't yours or it is rented.
           401:
             description: You aren't logged in
         """
@@ -191,7 +193,7 @@ class CarHandler():
         if carr is None:
             out = {'status': 'invalid car_id!'}
             return jsonify(out), 400
-        if user.role == "user" and carr not in user.cars:
+        if (user.role == "user") and (carr not in user.cars or carr.is_rented):
             out = {'status': 'you can not delete this car!'}
             return jsonify(out), 400
         db.session.delete(carr)
@@ -252,7 +254,7 @@ class CarHandler():
           400,status="there are no cars in the database!":
             description: No cars!
         """
-        cars = Car.query.all()
+        cars = Car.query.filter_by(is_rented=False).all()
         if cars is None:
             out = {'status': 'there are no cars in the database!'}
             return jsonify(out), 400
@@ -290,7 +292,7 @@ class CarHandler():
           400,status="Car not found!":
             description: Car not found!
           400,status="you can not update this car!":
-            description: You can't update this car because it is'nt yours.
+            description: You can't update this car because it is'nt yours or it's rented.
           401:
             description: You aren't logged in
         """
@@ -313,7 +315,7 @@ class CarHandler():
             carr.description = req.get("description")
         if req.get("price") is not None:
             carr.price = req.get("price")
-        if user.role == "user" and carr not in user.cars:
+        if (user.role == "user") and (carr not in user.cars or carr.is_rented):
             out = {'status': 'you can not update this car!'}
             return jsonify(out), 400
         db.session.commit()
