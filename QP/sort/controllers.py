@@ -91,17 +91,17 @@ class SortHandler():
         """
         if field == 'year':
             if ascending == 1:
-                cars = Car.query.filter(Car.year.isnot(None)).order_by(Car.year).all()
+                cars = Car.query.filter(Car.year.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(Car.year).all()
             elif ascending == 0:
-                cars = Car.query.filter(Car.year.isnot(None)).order_by(desc(Car.year)).all()
+                cars = Car.query.filter(Car.year.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(desc(Car.year)).all()
             else:
                 out = {'status': 'wrong input!'}
                 return jsonify(out), 400
         elif field == 'price':
             if ascending == 1:
-                cars = Car.query.filter(Car.price.isnot(None)).order_by(Car.price).all()
+                cars = Car.query.filter(Car.price.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(Car.price).all()
             elif ascending == 0:
-                cars = Car.query.filter(Car.price.isnot(None)).order_by(desc(Car.price)).all()
+                cars = Car.query.filter(Car.price.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(desc(Car.price)).all()
             else:
                 out = {'status': 'wrong input!'}
                 return jsonify(out), 400
