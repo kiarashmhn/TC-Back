@@ -161,7 +161,7 @@ class UserController():
             db.session.add(user)
             db.session.commit()
             print("signed in")
-            out = {'object': user}
+            out = {'object': user.serialize()}
             return jsonify(out), 200
         else:
             out = {'status': error}
