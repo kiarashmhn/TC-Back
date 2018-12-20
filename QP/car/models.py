@@ -16,6 +16,7 @@ class Car(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     price = db.Column(db.Integer)
     image_url = db.Column(db.String)
+    is_rented = db.Column(db.Boolean)
 
     def __repr__(self):
         return "<Car '{}'>".format(self.name)
@@ -36,5 +37,6 @@ class Car(db.Model):
             'user_id' : self.user_id,
             'price' : self.price,
             'id' : self.id,
-            'image_url' : self.image_url
+            'image_url' : self.image_url,
+            'is_rented' : self.is_rented
         }
