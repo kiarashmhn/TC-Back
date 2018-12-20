@@ -15,17 +15,6 @@ def initdb():
     user = User(name="admin", username="admin", password="admin", role="super_admin")
     db.session.add(user)
     db.session.commit()
-    car = Car(name="peykan", factory="bmw", kilometer=0, year=1931, color="sefid yakhchali",
-              description="mashin e khafan", automate=True, user_id=1, price=1000, image_url="peykan.jpg")
-    carr = Car(name="peykan", factory="bmw", kilometer=0, year=1931, color="sefid yakhchali",
-               description="mashin e khafan", automate=True, user_id=1, price=1000, image_url="peykan.jpg")
-    carrr = Car(name="peykan", factory="bmw", kilometer=0, year=1931, color="sefid yakhchali",
-                description="mashin e khafan", automate=True, user_id=1, price=1000, image_url="peykan.jpg")
-    db.session.add(car)
-    db.session.add(carr)
-    db.session.add(carrr)
-
-    db.session.commit()
     print('Initialized the database')
 
 
