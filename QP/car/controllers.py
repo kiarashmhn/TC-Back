@@ -394,8 +394,7 @@ class CarApiHandler():
           401:
             description: You aren't logged in
         """
-
-        carr = Car.query.filter_by(id=car_id).first()
+        carr = CarApiHandler.car_handler.get(car_id)
         if carr is None:
             out = {'status': 'car not found!'}
             return jsonify(out), 400
