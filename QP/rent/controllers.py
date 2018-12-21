@@ -1,0 +1,50 @@
+import os
+from datetime import datetime
+from flask import Flask, request, jsonify, redirect, render_template, url_for, flash, session
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import login_required, login_user, logout_user, current_user
+from QP import db, app, auth_manager
+from QP.rent.models import Rent
+from QP.user.models import User
+from QP.car.models import Car
+from flask_login import login_required, login_user, logout_user, current_user
+from QP import ResponseObject
+from flask import Blueprint
+
+rnt = Blueprint('rnt', __name__)
+
+
+class RentHandler():
+    def __init__(self):
+        pass
+
+    @staticmethod
+    @rnt.route('', methods=["POST"])
+    @auth_manager.authenticate
+    def rent_car(user):
+        req = request.get_json()
+        car = Car.query.filter_by(id=req.get("car_id")).first()
+        if not car:
+            out = {'status': 'car not found!'}
+            return jsonify(out), 400
+        owner = car.user_id
+        try:
+            car.is_rented = True
+            db.session.commit()
+            rent = Rent(user_id=user.id,
+                        owner_id=owner,
+                        car_id=car.id,
+                        cost=req.get("cost"),
+                        kilometer=req.get("kilometer"),
+                        start=req.get("start"),
+                        end=req.get("end"),
+                        source=req.get("source"),
+                        destination=req.get("destination"))
+            db.session.add(rent)
+            db.session.commit()
+            out = {'object': rent.serialize()}
+            return jsonify(out), 200
+
+        except:
+            out = {'status': 'Bad Request'}
+            return jsonify(out), 400
