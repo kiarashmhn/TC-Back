@@ -11,14 +11,31 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 img = Blueprint('img', __name__)
 
 
-class ImageHandler:
+class ImageHandler():
     def __init__(self):
         pass
 
-    @staticmethod
-    def allowed_file(filename):
+    def allowed_file(self, filename):
         return '.' in filename and \
                filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+
+    def add(self, car, file):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        car.image_url = filename
+        db.session.commit()
+
+    def get(self, filename):
+        filename = 'img/' + filename
+        return send_from_directory(app.static_folder,
+                                   filename)
+
+
+class ImageApiHandler():
+    image_handler = ImageHandler()
+
+    def __init__(self):
+        pass
 
     @staticmethod
     @img.route('/<int:car_id>', methods=['POST'])
@@ -64,6 +81,7 @@ class ImageHandler:
                 401:
                     description: You aren't logged in
         """
+        image_handler = ImageApiHandler.image_handler
         # check if the post request has the file part
         if 'file' not in request.files:
             out = {'status': 'No file part!'}
@@ -74,7 +92,7 @@ class ImageHandler:
         if file.filename == '':
             out = {'status': 'No selected file!'}
             return jsonify(out), 400
-        if file and ImageHandler.allowed_file(file.filename):
+        if file and image_handler.allowed_file(file.filename):
             car = Car.query.filter_by(id=car_id).first()
             if car is None:
                 out = {'status': 'Invalid car id!'}
@@ -82,10 +100,7 @@ class ImageHandler:
             if user.id != car.user_id:
                 out = {'status': 'Not allowed!'}
                 return jsonify(out), 400
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            car.image_url = filename
-            db.session.commit()
+            image_handler.add(car, file)
             out = {'status': 'OK'}
             return jsonify(out), 200
         else:
@@ -117,6 +132,4 @@ class ImageHandler:
                 404:
                     description: file not found
                 """
-        filename = 'img/' + filename
-        return send_from_directory(app.static_folder,
-                                   filename)
+        return ImageApiHandler.image_handler.get(filename)
