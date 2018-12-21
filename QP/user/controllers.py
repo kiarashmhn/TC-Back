@@ -6,7 +6,7 @@ from QP import db, app, auth_manager
 from QP.car.controllers import CarHandler
 from QP.user.models import User
 from QP import ResponseObject
-from flask import Blueprint
+from flask import Blueprint, g
 
 usr = Blueprint('usr', __name__)
 
@@ -188,7 +188,11 @@ class UserApiHandler():
             error = 'password field cannot be empty!'
         if error is None:
             try:
-                req["role"] = "user"
+                if 'role' in session:
+                    if session['role'] != "super_admin":
+                        req["role"] = "user"
+                else:
+                    req["role"] = "user"
                 user = user_handler.add(req)
                 print("signed in")
                 out = {'object': user.serialize()}

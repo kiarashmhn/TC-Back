@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import request, abort, g
+from flask import request, abort, g, session
 from uuid import uuid4
 from QP import db, User
 from QP.auth.token_store import Token
@@ -20,6 +20,8 @@ class Auth(object):
         t = Token(token=token, user_id=user_id)
         db.session.add(t)
         db.session.commit()
+        user = User.query.filter_by(id=user_id).first()
+        session['role'] = user.role
         return token
 
     def expire_token(self):
