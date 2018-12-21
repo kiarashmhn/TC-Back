@@ -10,7 +10,32 @@ from flask import Blueprint
 usr = Blueprint('usr', __name__)
 
 
-class UserController():
+class UserHandler():
+    def __init__(self):
+        pass
+
+    def add(self, req):
+        user = User(name=req.get("name"),
+                    username=req.get("username"),
+                    password=req.get("password"),
+                    lastName=req.get("lastName"),
+                    age=req.get("age"),
+                    identificationId=req.get("identificationId"),
+                    address=req.get("address"),
+                    gender=req.get("gender"),
+                    postalCode=req.get("postalCode"),
+                    mobile_num=req.get("mobile_num"),
+                    phone_num=req.get("phone_num"),
+                    email=req.get("email"),
+                    role=req.get("role"))
+        db.session.add(user)
+        db.session.commit()
+        return user
+
+
+class UserApiHandler():
+    user_handler = UserHandler()
+
     def __init__(self):
         pass
 
@@ -118,6 +143,7 @@ class UserController():
         """
         error = None
         req = request.get_json()
+        user_handler = UserApiHandler.user_handler
         if req is None:
             response = ResponseObject.ResponseObject(obj=User(), status='request body can not be empty!')
             return jsonify(response.serialize())
@@ -142,27 +168,15 @@ class UserController():
         if req.get("password") is None:
             error = 'password field cannot be empty!'
         if error is None:
-            user = User(name=req.get("name"),
-                        username=req.get("username"),
-                        password=req.get("password"),
-                        lastName=req.get("lastName"),
-                        age=req.get("age"),
-                        identificationId=req.get("identificationId"),
-                        address=req.get("address"),
-                        gender=req.get("gender"),
-                        postalCode=req.get("postalCode"),
-                        mobile_num=req.get("mobile_num"),
-                        phone_num=req.get("phone_num"),
-                        email=req.get("email"),
-                        role="user")
-            if 'role' in session:
-                if session['role'] == "super_admin":
-                    user.role = req.get("role")
-            db.session.add(user)
-            db.session.commit()
-            print("signed in")
-            out = {'object': user.serialize()}
-            return jsonify(out), 200
+            try:
+                req["role"] = "user"
+                user = user_handler.add(req)
+                print("signed in")
+                out = {'object': user.serialize()}
+                return jsonify(out), 200
+            except:
+                out = {'status': 'Bad Request!'}
+                return jsonify(out), 400
         else:
             out = {'status': error}
             return jsonify(out), 400
