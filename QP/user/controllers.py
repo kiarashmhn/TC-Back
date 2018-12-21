@@ -3,6 +3,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify, redirect, render_template, url_for, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from QP import db, app, auth_manager
+from QP.car.controllers import CarHandler
 from QP.user.models import User
 from QP import ResponseObject
 from flask import Blueprint
@@ -44,9 +45,15 @@ class UserHandler():
         u = User.query.filter_by(id=user_id).first()
         return u
 
+    def delete(self, user_id):
+        u = User.query.filter_by(id=user_id).first()
+        db.session.delete(u)
+        db.session.commit()
+
 
 class UserApiHandler():
     user_handler = UserHandler()
+    car_handler = CarHandler()
 
     def __init__(self):
         pass
@@ -445,12 +452,15 @@ class UserApiHandler():
                 out = {'status': 'invalid user_id!'}
                 return jsonify(out), 400
             if user2.role == "user" or user.role == "super_admin":
-                for car in user2.cars:
-                    db.session.delete(car)
-                db.session.delete(user2)
-                db.session.commit()
-                out = {'status': 'OK'}
-                return jsonify(out), 200
+                try:
+                    for car in user2.cars:
+                        UserApiHandler.car_handler.delete(car.id)
+                    UserApiHandler.user_handler.delete(user2.id)
+                    out = {'status': 'OK'}
+                    return jsonify(out), 200
+                except:
+                    out = {'status': 'you can not delete this user!'}
+                    return jsonify(out), 400
             else:
                 out = {'status': 'you can not delete this user!'}
                 return jsonify(out), 400
