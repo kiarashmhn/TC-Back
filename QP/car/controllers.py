@@ -31,8 +31,14 @@ class CarHandler():
         db.session.add(carr)
         db.session.commit()
         return carr
-    #def delete(self):
-    #def get(self):
+
+    def delete(self, car_id):
+        carr = Car.query.filter_by(id=car_id).first()
+        db.session.delete(carr)
+        db.session.commit()
+
+    def get(self, car_id):
+        return Car.query.filter_by(id=car_id).first()
     #def update(self):
 
 
@@ -190,18 +196,18 @@ class CarApiHandler():
           401:
             description: You aren't logged in
         """
+        car_handler = CarApiHandler.car_handler
         if car_id is None:
             out = {'status': 'car_id cannot be empty!'}
             return jsonify(out), 400
-        carr = Car.query.filter_by(id=car_id).first()
+        carr = car_handler.get(car_id)
         if carr is None:
             out = {'status': 'invalid car_id!'}
             return jsonify(out), 400
         if (user.role == "user") and (carr not in user.cars or carr.is_rented):
             out = {'status': 'you can not delete this car!'}
             return jsonify(out), 400
-        db.session.delete(carr)
-        db.session.commit()
+        car_handler.delete(car_id)
         out = {'status': 'OK'}
         return jsonify(out), 200
 
