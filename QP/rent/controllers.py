@@ -68,14 +68,98 @@ class RentApiHandler():
     @rnt.route('', methods=["POST"])
     @auth_manager.authenticate
     def rent_car(user):
-        req = request.get_json()
-        car = RentApiHandler.car_handler.get(req.get("car_id"))
-        if not car:
-            out = {'status': 'car not found!'}
-            return jsonify(out), 400
-        req["owner"] = car.user_id
-        req["user_id"] = user.id
+        """
+            This is the RentCar API
+            Call this api passing a rent model in request body to add it.
+            ---
+            tags:
+                - RentCar API
+            consumes:
+                - application/json
+            parameters:
+                - in: body
+                  name: rent
+                  description: The rent model to add to database.
+                  schema:
+                    type: object
+                    required:
+                        - car_id
+                    properties:
+                        car_id:
+                            example: 1
+                            type: integer
+                        kilometer:
+                            type: integer
+                            example: 1000
+                        start:
+                            type: string
+                            example: 21 Jan 2018, 7:30:12 PM
+                        end:
+                            type: string
+                            example: 25 Jan 2018, 12:35:07 PM
+                        cost:
+                            type: integer
+                            example: 2000000
+                        source:
+                            type: integer
+                            example: 1
+                        destination:
+                            type: integer
+                            example: 2
+            responses:
+                200:
+                    description: OK.
+                    schema:
+                    type: object
+                    properties:
+                        object:
+                          type: object
+                          properties:
+                            car_id:
+                                example: 1
+                                type: integer
+                            user_id:
+                                type: integer
+                                example: 1
+                            owner_id:
+                                type: integer
+                                example: 1
+                            kilometer:
+                                type: integer
+                                example: 1000
+                            start:
+                                type: string
+                                example: 21 Jan 2018, 7:30:12 PM
+                            end:
+                                type: string
+                                example: 25 Jan 2018, 12:35:07 PM
+                            cost:
+                                type: integer
+                                example: 2000000
+                            source:
+                                type: integer
+                                example: 1
+                            destination:
+                                type: integer
+                                example: 2
+                            id:
+                                type: integer
+                                example: 1
+                400,status="Bad request":
+                    description: rent wasn't added.
+                400,status="car not found":
+                    description: Car not found!
+                401:
+                    description: You aren't logged in
+                """
         try:
+            req = request.get_json()
+            car = RentApiHandler.car_handler.get(req.get("car_id"))
+            if not car:
+                out = {'status': 'car not found!'}
+                return jsonify(out), 400
+            req["owner"] = car.user_id
+            req["user_id"] = user.id
             car.is_rented = True
             db.session.commit()
             rent = RentApiHandler.rent_handler.add(req)
@@ -108,6 +192,62 @@ class RentApiHandler():
     @rnt.route('/<int:id>', methods=["PUT"])
     @auth_manager.authenticate
     def update_rent(user, id):
+        """
+                This is the UpdateRent API
+                Call this api passing a rent model in request body to update it.
+                ---
+                tags:
+                    - UpdateRentAPI
+                consumes:
+                    - application/json
+                parameters:
+                    - name: rent_id
+                      in: path
+                      type: integer
+                      required: true
+                      description: id of the rent you want to update
+                    - in: body
+                      name: rent
+                      description: The rent model to update.
+                      schema:
+                        type: object
+                        required:
+                            - car_id
+                        properties:
+                            kilometer:
+                                type: integer
+                                example: 1000
+                            start:
+                                type: string
+                                example: 21 Jan 2018, 7:30:12 PM
+                            end:
+                                type: string
+                                example: 25 Jan 2018, 12:35:07 PM
+                            cost:
+                                type: integer
+                                example: 2000000
+                            source:
+                                type: integer
+                                example: 1
+                            destination:
+                                    type: integer
+                                    example: 2
+                responses:
+                        200:
+                            description: OK.
+                            schema:
+                            type: object
+                            properties:
+                                status:
+                                  type: string
+                                  example: OK
+                        400,status="Bad request":
+                            description: rent wasn't added.
+                        400,status="car not found":
+                            description: Car not found!
+                        401:
+                            description: You aren't logged in
+        """
         req = request.get_json()
         if user.role == "user":
             out = {'status': 'Access Denied!'}
