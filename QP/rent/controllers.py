@@ -48,3 +48,23 @@ class RentHandler():
         except:
             out = {'status': 'Bad Request'}
             return jsonify(out), 400
+
+    @staticmethod
+    @rnt.route('/<int:id>', methods=["DELETE"])
+    @auth_manager.authenticate
+    def delete_rent(user, id):
+        r = Rent.query.filter_by(id=id).first()
+        if user.role == "user":
+            out = {'status': 'Access Denied!'}
+            return jsonify(out), 400
+        if r is None:
+            out = {'status': 'Not Found!'}
+            return jsonify(out), 404
+        car_id = r.car_id
+        db.session.delete(r)
+        db.session.commit()
+        car = Car.query.filter_by(id=car_id).first()
+        car.is_rented = False
+        db.session.commit()
+        out = {'status': 'OK'}
+        return jsonify(out), 200
