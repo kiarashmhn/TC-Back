@@ -19,6 +19,27 @@ class SortHandler():
     def __init__(self):
         pass
 
+    def sort_car(self, field, ascending):
+        cars = None
+        if field == 'year':
+            if ascending == 1:
+                cars = Car.query.filter(Car.year.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(Car.year).all()
+            elif ascending == 0:
+                cars = Car.query.filter(Car.year.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(desc(Car.year)).all()
+        elif field == 'price':
+            if ascending == 1:
+                cars = Car.query.filter(Car.price.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(Car.price).all()
+            elif ascending == 0:
+                cars = Car.query.filter(Car.price.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(desc(Car.price)).all()
+        return cars
+
+
+class SortApiHandler():
+    sort_handler = SortHandler()
+
+    def __init__(self):
+        pass
+
     @staticmethod
     @srt.route('/cars/<field>/<int:ascending>', methods=["GET"])
     def sort_car(field, ascending):
@@ -89,30 +110,20 @@ class SortHandler():
           401:
             description: You aren't logged in.
         """
-        if field == 'year':
-            if ascending == 1:
-                cars = Car.query.filter(Car.year.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(Car.year).all()
-            elif ascending == 0:
-                cars = Car.query.filter(Car.year.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(desc(Car.year)).all()
-            else:
-                out = {'status': 'wrong input!'}
-                return jsonify(out), 400
-        elif field == 'price':
-            if ascending == 1:
-                cars = Car.query.filter(Car.price.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(Car.price).all()
-            elif ascending == 0:
-                cars = Car.query.filter(Car.price.isnot(None)).filter(Car.is_rented.isnot(True)).order_by(desc(Car.price)).all()
-            else:
-                out = {'status': 'wrong input!'}
-                return jsonify(out), 400
-        else:
+        sort_handler = SortApiHandler.sort_handler
+        if ascending != 0 and ascending != 1:
+            out = {'status': 'wrong input!'}
+            return jsonify(out), 400
+        elif field != 'year' and field != 'price':
             out = {'status': 'wrong field!'}
             return jsonify(out), 400
-        if cars is None:
+        try:
+            cars = sort_handler.sort_car(field, ascending)
+            c = []
+            for car in cars:
+                c.append(car.serialize())
+            out = {'object': c}
+            return jsonify(out), 200
+        except:
             out = {'status': 'no cars in the database!'}
             return jsonify(out), 400
-        c = []
-        for car in cars:
-            c.append(car.serialize())
-        out = {'object': c}
-        return jsonify(out), 200
