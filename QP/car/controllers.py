@@ -39,6 +39,9 @@ class CarHandler():
 
     def get(self, car_id):
         return Car.query.filter_by(id=car_id).first()
+
+    def get_all(self):
+        return Car.query.filter_by(is_rented=False).all()
     #def update(self):
 
 
@@ -264,7 +267,7 @@ class CarApiHandler():
           400,status="there are no cars in the database!":
             description: No cars!
         """
-        cars = Car.query.filter_by(is_rented=False).all()
+        cars = CarApiHandler.car_handler.get_all()
         if cars is None:
             out = {'status': 'there are no cars in the database!'}
             return jsonify(out), 400
