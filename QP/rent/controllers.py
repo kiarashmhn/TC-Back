@@ -104,3 +104,14 @@ class RentHandler():
             rents.append(rent.serialize())
         out = {'object': rents}
         return jsonify(out), 200
+
+    @staticmethod
+    @rnt.route('/user', methods=["GET"])
+    @auth_manager.authenticate
+    def get_by_user(user):
+        r = Rent.query.filter_by(user_id=user.id).first()
+        if r is None:
+            out = {'status': 'Not Found!'}
+            return jsonify(out), 404
+        out = {'object': r.serialize()}
+        return jsonify(out), 200
