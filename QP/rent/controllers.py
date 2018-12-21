@@ -42,6 +42,16 @@ class RentHandler():
         r = Rent.query.filter_by(id=rent_id).first()
         return r
 
+    def update(self, rent_id, req):
+        r = Rent.query.filter_by(id=rent_id).first()
+        r.source = req.get("source")
+        r.destination = req.get("destination")
+        r.start = req.get("start")
+        r.end = req.get("end")
+        r.cost = req.get("cost")
+        r.kilometer = req.get("kilometer")
+        db.session.commit()
+
 class RentApiHandler():
     rent_handler = RentHandler()
     car_handler = CarHandler()
@@ -94,20 +104,14 @@ class RentApiHandler():
     @auth_manager.authenticate
     def update_rent(user, id):
         req = request.get_json()
-        r = Rent.query.filter_by(id=id).first()
         if user.role == "user":
             out = {'status': 'Access Denied!'}
             return jsonify(out), 400
+        r = RentApiHandler.rent_handler.get(id)
         if r is None:
             out = {'status': 'Not Found!'}
             return jsonify(out), 404
-        r.source = req.get("source")
-        r.destination = req.get("destination")
-        r.start = req.get("start")
-        r.end = req.get("end")
-        r.cost = req.get("cost")
-        r.kilometer = req.get("kilometer")
-        db.session.commit()
+        RentApiHandler.rent_handler.update(id, req)
         out = {'status': 'OK'}
         return jsonify(out), 200
 
