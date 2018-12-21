@@ -32,8 +32,16 @@ class UserHandler():
         db.session.commit()
         return user
 
-    def get_by_name(self, name):
-        u = User.get_by_username(username=name)
+    def get_by_name(self, username):
+        u = User.get_by_username(username=username)
+        return u
+
+    def get_all(self):
+        users = User.query.all()
+        return users
+
+    def get_by_id(self, user_id):
+        u = User.query.filter_by(id=user_id).first()
         return u
 
 
@@ -386,7 +394,7 @@ class UserApiHandler():
                 description: You haven't logged in!
         """
         if user.role == "super_admin" or user.role == "admin":
-            users = User.query.all()
+            users = UserApiHandler.user_handler.get_all()
             if users is None:
                 out = {'status': 'there are no users in the database!'}
                 return jsonify(out), 400
@@ -432,7 +440,7 @@ class UserApiHandler():
             if user_id is None:
                 out = {'status': 'user_id cannot be empty!'}
                 return jsonify(out), 400
-            user2 = User.query.filter_by(id=user_id).first()
+            user2 = UserApiHandler.user_handler.get_by_id(user_id)
             if user2 is None:
                 out = {'status': 'invalid user_id!'}
                 return jsonify(out), 400
@@ -441,8 +449,8 @@ class UserApiHandler():
                     db.session.delete(car)
                 db.session.delete(user2)
                 db.session.commit()
-                out = {'status': 'OK'}, 200
-                return jsonify(out)
+                out = {'status': 'OK'}
+                return jsonify(out), 200
             else:
                 out = {'status': 'you can not delete this user!'}
                 return jsonify(out), 400
