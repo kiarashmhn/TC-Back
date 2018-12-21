@@ -90,3 +90,17 @@ class RentHandler():
         db.session.commit()
         out = {'status': 'OK'}
         return jsonify(out), 200
+
+    @staticmethod
+    @rnt.route('/owner', methods=["GET"])
+    @auth_manager.authenticate
+    def get_by_owner(user):
+        r = Rent.query.filter_by(owner_id=user.id).all()
+        if r is None:
+            out = {'status': 'Not Found!'}
+            return jsonify(out), 404
+        rents = []
+        for rent in r:
+            rents.append(rent.serialize())
+        out = {'object': rents}
+        return jsonify(out), 200
