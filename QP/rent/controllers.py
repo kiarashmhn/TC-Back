@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify, redirect, render_template, url_for, f
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import login_required, login_user, logout_user, current_user
 from QP import db, app, auth_manager
+from QP.car.controllers import CarHandler
 from QP.rent.models import Rent
 from QP.user.models import User
 from QP.car.models import Car
@@ -18,33 +19,45 @@ class RentHandler():
     def __init__(self):
         pass
 
+    def add(self, req):
+        rent = Rent(user_id=req.get("user_id"),
+                    owner_id=req.get("owner"),
+                    car_id=req.get("car_id"),
+                    cost=req.get("cost"),
+                    kilometer=req.get("kilometer"),
+                    start=req.get("start"),
+                    end=req.get("end"),
+                    source=req.get("source"),
+                    destination=req.get("destination"))
+        db.session.add(rent)
+        db.session.commit()
+        return rent
+
+
+class RentApiHandler():
+    rent_handler = RentHandler()
+    car_handler = CarHandler()
+
+    def __init__(self):
+        pass
+
     @staticmethod
     @rnt.route('', methods=["POST"])
     @auth_manager.authenticate
     def rent_car(user):
         req = request.get_json()
-        car = Car.query.filter_by(id=req.get("car_id")).first()
+        car = RentApiHandler.car_handler.get(req.get("car_id"))
         if not car:
             out = {'status': 'car not found!'}
             return jsonify(out), 400
-        owner = car.user_id
+        req["owner"] = car.user_id
+        req["user_id"] = user.id
         try:
             car.is_rented = True
             db.session.commit()
-            rent = Rent(user_id=user.id,
-                        owner_id=owner,
-                        car_id=car.id,
-                        cost=req.get("cost"),
-                        kilometer=req.get("kilometer"),
-                        start=req.get("start"),
-                        end=req.get("end"),
-                        source=req.get("source"),
-                        destination=req.get("destination"))
-            db.session.add(rent)
-            db.session.commit()
+            rent = RentApiHandler.rent_handler.add(req)
             out = {'object': rent.serialize()}
             return jsonify(out), 200
-
         except:
             out = {'status': 'Bad Request'}
             return jsonify(out), 400
