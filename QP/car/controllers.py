@@ -42,7 +42,25 @@ class CarHandler():
 
     def get_all(self):
         return Car.query.filter_by(is_rented=False).all()
-    #def update(self):
+
+    def update(self, req, car_id):
+        carr = Car.query.filter_by(id=car_id).first()
+        if req.get("factory") is not None:
+            carr.factory = req.get("factory")
+        if req.get("kilometer") is not None:
+            carr.kilometer = req.get("kilometer")
+        if req.get("year") is not None:
+            carr.year = req.get("year")
+        if req.get("color") is not None:
+            carr.color = req.get("color")
+        if req.get("automate") is not None:
+            carr.automate = req.get("automate")
+        if req.get("description") is not None:
+            carr.description = req.get("description")
+        if req.get("price") is not None:
+            carr.price = req.get("price")
+        db.session.commit()
+        return carr
 
 
 class CarApiHandler():
@@ -310,28 +328,15 @@ class CarApiHandler():
             description: You aren't logged in
         """
         req = request.get_json()
-        carr = Car.query.filter_by(id=car_id).first()
+        car_handler = CarApiHandler.car_handler
+        carr = car_handler.get(car_id)
         if carr is None:
             out = {'status': 'car not found!'}
             return jsonify(out), 400
-        if req.get("factory") is not None:
-            carr.factory = req.get("factory")
-        if req.get("kilometer") is not None:
-            carr.kilometer = req.get("kilometer")
-        if req.get("year") is not None:
-            carr.year = req.get("year")
-        if req.get("color") is not None:
-            carr.color = req.get("color")
-        if req.get("automate") is not None:
-            carr.automate = req.get("automate")
-        if req.get("description") is not None:
-            carr.description = req.get("description")
-        if req.get("price") is not None:
-            carr.price = req.get("price")
         if (user.role == "user") and (carr not in user.cars or carr.is_rented):
             out = {'status': 'you can not update this car!'}
             return jsonify(out), 400
-        db.session.commit()
+        car_handler.update(req, car_id)
         out = {'status': 'OK'}
         return jsonify(out), 200
 
