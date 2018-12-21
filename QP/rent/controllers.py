@@ -52,6 +52,11 @@ class RentHandler():
         r.kilometer = req.get("kilometer")
         db.session.commit()
 
+    def get_all(self):
+        r = Rent.query.all()
+        return r
+
+
 class RentApiHandler():
     rent_handler = RentHandler()
     car_handler = CarHandler()
@@ -119,23 +124,28 @@ class RentApiHandler():
     @rnt.route('/owner', methods=["GET"])
     @auth_manager.authenticate
     def get_by_owner(user):
-        r = Rent.query.filter_by(owner_id=user.id).all()
-        if r is None:
+        r = RentApiHandler.rent_handler.get_all()
+        r1 = []
+        for rent in r:
+            if rent.user_id == user.id:
+                r1.append(rent.serialize())
+        if r1 is None:
             out = {'status': 'Not Found!'}
             return jsonify(out), 404
-        rents = []
-        for rent in r:
-            rents.append(rent.serialize())
-        out = {'object': rents}
+        out = {'object': r1}
         return jsonify(out), 200
 
     @staticmethod
     @rnt.route('/user', methods=["GET"])
     @auth_manager.authenticate
     def get_by_user(user):
-        r = Rent.query.filter_by(user_id=user.id).first()
-        if r is None:
+        r = RentApiHandler.rent_handler.get_all()
+        r1 = []
+        for rent in r:
+            if rent.owner_id == user.id:
+                r1.append(rent.serialize())
+        if r1 is None:
             out = {'status': 'Not Found!'}
             return jsonify(out), 404
-        out = {'object': r.serialize()}
+        out = {'object': r1}
         return jsonify(out), 200
