@@ -33,6 +33,14 @@ class RentHandler():
         db.session.commit()
         return rent
 
+    def delete(self, rent_id):
+        r = Rent.query.filter_by(id=rent_id).first()
+        db.session.delete(r)
+        db.session.commit()
+
+    def get(self, rent_id):
+        r = Rent.query.filter_by(id=rent_id).first()
+        return r
 
 class RentApiHandler():
     rent_handler = RentHandler()
@@ -66,17 +74,16 @@ class RentApiHandler():
     @rnt.route('/<int:id>', methods=["DELETE"])
     @auth_manager.authenticate
     def delete_rent(user, id):
-        r = Rent.query.filter_by(id=id).first()
         if user.role == "user":
             out = {'status': 'Access Denied!'}
             return jsonify(out), 400
+        r = RentApiHandler.rent_handler.get(id)
         if r is None:
             out = {'status': 'Not Found!'}
             return jsonify(out), 404
         car_id = r.car_id
-        db.session.delete(r)
-        db.session.commit()
-        car = Car.query.filter_by(id=car_id).first()
+        RentApiHandler.rent_handler.delete(id)
+        car = RentApiHandler.car_handler.get(car_id)
         car.is_rented = False
         db.session.commit()
         out = {'status': 'OK'}
