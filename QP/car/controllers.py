@@ -17,6 +17,31 @@ class CarHandler():
     def __init__(self):
         pass
 
+    def add(self, req):
+        carr = Car(name=req.get("name"),
+                   factory=req.get("factory"),
+                   kilometer=req.get("kilometer"),
+                   year=req.get("year"),
+                   color=req.get("color"),
+                   description=req.get("description"),
+                   automate=req.get("automate"),
+                   price=req.get("price"),
+                   user_id=req.get("user_id"),
+                   is_rented=False)
+        db.session.add(carr)
+        db.session.commit()
+        return carr
+    #def delete(self):
+    #def get(self):
+    #def update(self):
+
+
+class CarApiHandler():
+    car_handler = CarHandler()
+
+    def __init__(self):
+        pass
+
     @staticmethod
     @car.route('', methods=["POST"])
     @auth_manager.authenticate
@@ -111,6 +136,7 @@ class CarHandler():
             401:
               description: You aren't logged in
         """
+        car_handler = CarApiHandler.car_handler
         req = request.get_json()
         if user.role == "admin" or user.role == "super_admin":
             if req.get("user_id") is None:
@@ -119,38 +145,16 @@ class CarHandler():
             elif User.query.filter_by(id=req.get("user_id")).first() is None:
                 out = {'status': 'invalid user_id!'}
                 return jsonify(out), 400
-            else:
-                carr = Car(name=req.get("name"),
-                           factory=req.get("factory"),
-                           kilometer=req.get("kilometer"),
-                           year=req.get("year"),
-                           color=req.get("color"),
-                           description=req.get("description"),
-                           automate=req.get("automate"),
-                           price=req.get("price"),
-                           user_id=req.get("user_id"),
-                           is_rented=False)
-                db.session.add(carr)
-                db.session.commit()
-                print("car added")
-                out = {'object': carr.serialize()}
-                return jsonify(out), 200
         else:
-            carr = Car(name=req.get("name"),
-                       factory=req.get("factory"),
-                       kilometer=req.get("kilometer"),
-                       year=req.get("year"),
-                       color=req.get("color"),
-                       description=req.get("description"),
-                       automate=req.get("automate"),
-                       price=req.get("price"),
-                       user_id=user.id,
-                       is_rented=False)
-            db.session.add(carr)
-            db.session.commit()
+            req["user_id"] = user.id
+        try:
+            carr = car_handler.add(req)
             print("car added")
             out = {'object': carr.serialize()}
             return jsonify(out), 200
+        except:
+            out = {'status': 'Bad Request'}
+            return jsonify(out), 400
 
     @staticmethod
     @car.route('/<int:car_id>', methods=["DELETE"])
