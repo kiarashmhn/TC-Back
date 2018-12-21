@@ -173,6 +173,36 @@ class RentApiHandler():
     @rnt.route('/<int:id>', methods=["DELETE"])
     @auth_manager.authenticate
     def delete_rent(user, id):
+        """
+            This is the DeleteRent API
+            Call this api passing a rent_id to delete it.
+            ---
+            tags:
+                - DeleteRentAPI
+            consumes:
+                - application/json
+            parameters:
+                - name: rent_id
+                  in: path
+                  type: integer
+                  required: true
+                  description: id of the rent you want to delete
+            responses:
+                200:
+                    description: OK.
+                    schema:
+                    type: object
+                    properties:
+                        status:
+                            type: string
+                            example: OK
+                400:
+                    description: Access Denied!
+                404:
+                    description: Rent not found!
+                401:
+                    description: You aren't logged in
+        """
         if user.role == "user":
             out = {'status': 'Access Denied!'}
             return jsonify(out), 400
@@ -242,7 +272,7 @@ class RentApiHandler():
                                   type: string
                                   example: OK
                         400,status="Bad request":
-                            description: rent wasn't added.
+                            description: rent wasn't updated.
                         400,status="car not found":
                             description: Car not found!
                         401:
@@ -264,6 +294,61 @@ class RentApiHandler():
     @rnt.route('/owner', methods=["GET"])
     @auth_manager.authenticate
     def get_by_owner(user):
+        """
+        This is the GetRentsByOwner API
+        Call this api to get your rents.
+        ---
+        tags:
+            - GetRentsByOwnerAPI
+        consumes:
+            - application/json
+        responses:
+            200:
+                description: OK.
+                schema:
+                type: object
+                properties:
+                    object:
+                        type: array
+                        items:
+                            type: object
+                            properties:
+                                car_id:
+                                    example: 1
+                                    type: integer
+                                user_id:
+                                    type: integer
+                                    example: 1
+                                owner_id:
+                                    type: integer
+                                    example: 1
+                                kilometer:
+                                    type: integer
+                                    example: 1000
+                                start:
+                                    type: string
+                                    example: 21 Jan 2018, 7:30:12 PM
+                                end:
+                                    type: string
+                                    example: 25 Jan 2018, 12:35:07 PM
+                                cost:
+                                    type: integer
+                                    example: 2000000
+                                source:
+                                    type: integer
+                                    example: 1
+                                destination:
+                                    type: integer
+                                    example: 2
+                                id:
+                                    type: integer
+                                    example: 1
+
+            404:
+                description: no Rents found!
+            401:
+                description: You aren't logged in
+                """
         r = RentApiHandler.rent_handler.get_all()
         r1 = []
         for rent in r:
@@ -279,6 +364,59 @@ class RentApiHandler():
     @rnt.route('/user', methods=["GET"])
     @auth_manager.authenticate
     def get_by_user(user):
+        """
+        This is the GetRentByUser API
+        Call this api to get your rent.
+        ---
+        tags:
+            - GetRentByUserAPI
+        consumes:
+            - application/json
+        responses:
+            200:
+                description: OK.
+                schema:
+                type: object
+                properties:
+                    object:
+                        type: object
+                        properties:
+                                car_id:
+                                    example: 1
+                                    type: integer
+                                user_id:
+                                    type: integer
+                                    example: 1
+                                owner_id:
+                                    type: integer
+                                    example: 1
+                                kilometer:
+                                    type: integer
+                                    example: 1000
+                                start:
+                                    type: string
+                                    example: 21 Jan 2018, 7:30:12 PM
+                                end:
+                                    type: string
+                                    example: 25 Jan 2018, 12:35:07 PM
+                                cost:
+                                    type: integer
+                                    example: 2000000
+                                source:
+                                    type: integer
+                                    example: 1
+                                destination:
+                                    type: integer
+                                    example: 2
+                                id:
+                                    type: integer
+                                    example: 1
+
+            404:
+                description: no Rents found!
+            401:
+                description: You aren't logged in
+        """
         r = RentApiHandler.rent_handler.get_all()
         r1 = []
         for rent in r:
