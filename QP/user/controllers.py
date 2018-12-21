@@ -32,6 +32,10 @@ class UserHandler():
         db.session.commit()
         return user
 
+    def get_by_name(self, name):
+        u = User.get_by_username(username=name)
+        return u
+
 
 class UserApiHandler():
     user_handler = UserHandler()
@@ -268,9 +272,7 @@ class UserApiHandler():
             description: User wasn't logged in because of the message in status.
                 """
         req = request.get_json()
-        if req is None:
-            response = ResponseObject.ResponseObject(obj=User(), status='request body can not be empty!')
-            return jsonify(response.serialize())
+        user_handler = UserApiHandler.user_handler
         username = req.get("username")
         password = req.get("password")
         error = None
@@ -278,7 +280,7 @@ class UserApiHandler():
             error = 'username and password fields cannot be empty!'
             out = {'status': error}
             return jsonify(out), 400
-        u = User.get_by_username(username=username)
+        u = user_handler.get_by_name(username)
         if u is None or not u.check_password(password):
             error = 'invalid credentials!'
             out = {'status': error}
