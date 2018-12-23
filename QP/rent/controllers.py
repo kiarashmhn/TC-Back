@@ -431,5 +431,5 @@ class RentApiHandler():
     @staticmethod
     @rnt.route('locations', methods=["GET"])
     def get_locations():
-        return jsonify(["تهرانپارس", "میدان سپاه", "میدان هفت تیر", "میدان صنعت", "فرودگاه امام خمینی",
-                        "فرودگاه مهرآباد", "میدان ولیعصر"])
+        return jsonify({'object': ["TehranPars", "Sepah Sq.", "Hafte-Tir Sq.",  "Imam Khomeini Airport",
+                        "Mehrabad Airport", "Valiasr Sq."]}), 200
