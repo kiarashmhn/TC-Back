@@ -1,4 +1,6 @@
 import os
+
+from elasticsearch import Elasticsearch
 from flask import Flask, request, jsonify, redirect, render_template, url_for, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -16,6 +18,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 cors = CORS(resources={r"/api/*": {"origins": "*"}})
 cors.init_app(app)
+app.elasticsearch = Elasticsearch('http://127.0.0.1:9200')
 
 from QP.user.models import User
 from QP.auth.auth_manager import Auth
@@ -26,6 +29,7 @@ from QP.car.models import Car
 from QP.sort.controllers import srt
 from QP.image.controllers import img
 from QP.rent.controllers import rnt
+from QP.search.controllers import sea
 
 base_url = '/api/v1'
 
@@ -34,3 +38,4 @@ app.register_blueprint(car, url_prefix=base_url+'/cars')
 app.register_blueprint(srt, url_prefix=base_url+'/sort')
 app.register_blueprint(img, url_prefix=base_url+'/images')
 app.register_blueprint(rnt, url_prefix=base_url+'/rent')
+app.register_blueprint(sea, url_prefix=base_url+'/search')
