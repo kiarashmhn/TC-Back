@@ -1,10 +1,13 @@
 from flask_login import UserMixin
 from werkzeug.security import check_password_hash, generate_password_hash
 from QP import db
+from QP.search.models import SearchableMixin
 from QP.user.models import User
 
 
-class Car(db.Model):
+class Car(SearchableMixin, db.Model):
+    __searchable__ = ['name', 'factory', 'color', 'year']
+    __tablename__ = 'car'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     factory = db.Column(db.String(20))
