@@ -352,7 +352,7 @@ class RentApiHandler():
         r = RentApiHandler.rent_handler.get_all()
         r1 = []
         for rent in r:
-            if rent.user_id == user.id:
+            if rent.owner_id == user.id:
                 r1.append(rent.serialize())
         if r1 is None:
             out = {'status': 'Not Found!'}
@@ -418,15 +418,15 @@ class RentApiHandler():
                 description: You aren't logged in
         """
         r = RentApiHandler.rent_handler.get_all()
-        r1 = []
+        r1 = None
         for rent in r:
-            if rent.owner_id == user.id:
-                r1.append(rent.serialize())
-        if r1 is None:
-            out = {'status': 'Not Found!'}
-            return jsonify(out), 404
-        out = {'object': r1}
-        return jsonify(out), 200
+            if rent.user_id == user.id:
+                r1 = rent.serialize()
+                out = {'object': r1}
+                return jsonify(out), 200
+        out = {'status': 'Not Found!'}
+        return jsonify(out), 404
+
 
     @staticmethod
     @rnt.route('locations', methods=["GET"])
