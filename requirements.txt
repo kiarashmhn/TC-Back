@@ -81,7 +81,7 @@ six==1.11.0
 SQLAlchemy==1.2.12
 stevedore==1.29.0
 tornado==5.1
-urllib3==1.23
+urllib3==1.24.2
 vine==1.1.4
 virtualenv==16.0.0
 Werkzeug==0.14.1
